@@ -22,7 +22,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/user/Bureau/json-csv.converter/commons-csv-1.7/commons-csv-1.7.jar"/>
-	<classpathentry kind="lib" path="/home/user/Bureau/json-csv.converter/commons-csv-1.7/commons-csv-1.7-sources.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
