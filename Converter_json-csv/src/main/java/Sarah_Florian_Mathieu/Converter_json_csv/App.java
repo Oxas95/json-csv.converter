@@ -1,15 +1,19 @@
 package Sarah_Florian_Mathieu.Converter_json_csv;
 
+import java.io.IOException;
+
 /**
  * Hello world!
  *
  */
 public enum App 
 {
-	APPPLICATION;
-	
-    public static void main( String[] args )
+	APPLICATION;
+
+    public static void main( String[] args ) throws IOException
     {
-        System.out.println( "Hello World!" );
+    	CsvManager cm = new CsvManager("exemple.csv");
+    	CsvManager.parseCsvFile("test1", cm.getArrayCopy(), cm.getWidth(), cm.getHeight());
+    	
     }
 }
