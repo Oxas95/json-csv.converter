@@ -1,6 +1,7 @@
 package Sarah_Florian_Mathieu.Converter_json_csv;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -14,6 +15,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
 public class CsvManager {
+	
 	/**
 	 * how many lines
 	 */
@@ -133,12 +135,19 @@ public class CsvManager {
 	 * take the path of new csv file, array containing values and dimensions of the array
 	 * @param newPath in which file to write
 	 * @param csv array containing values
-	 * @param largeur how many values in a line
-	 * @param hauteur how many lines
-	 * @throws IOException
+	 * @param width how many values in a line
+	 * @param height how many lines
+	 * @throws IOException if there is a problem when writing file
+	 * @throws IllegalArgumentException newPath is null pointer or is an existing file
 	 */
-	public static void parseCsvFile(String newPath, String[][] csv, int width, int height) throws IOException {
+	public static void parseCsvFile(String newPath, String[][] csv, int width, int height) throws IOException, IllegalArgumentException {
+		if(newPath == null) throw new IllegalArgumentException ();
 		if(newPath.endsWith(".csv") == false) newPath += ".csv";
+		File f = new File(newPath);
+		if(f.exists()) {
+			System.err.println(newPath + " already exists, save undone.");
+			throw new IllegalArgumentException ();
+		}
 		int i;
 		ArrayList <String> l;
 		
