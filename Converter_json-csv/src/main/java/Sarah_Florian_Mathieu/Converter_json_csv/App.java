@@ -14,6 +14,6 @@ public enum App
     {
     	CsvManager cm = new CsvManager("exemple.csv");
     	CsvManager.parseCsvFile("test1", cm.getArrayCopy(), cm.getWidth(), cm.getHeight());
-    	
+    	JsonManager.parseJsonFile("lol",cm.getArrayCopy(),cm.getWidth(),cm.getHeight());
     }
 }
