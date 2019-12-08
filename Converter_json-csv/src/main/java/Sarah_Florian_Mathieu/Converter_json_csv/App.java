@@ -12,8 +12,11 @@ public enum App
 
     public static void main( String[] args ) throws IOException
     {
-    	CsvManager cm = new CsvManager("exemple.csv");
+    	String path = args[0];
+    	if(path.isEmpty() || args[0].isEmpty() || !args[0].endsWith(".csv")) throw new IllegalArgumentException();
+    	CsvManager cm = new CsvManager(path);
     	CsvManager.parseCsvFile("test1", cm.getArrayCopy(), cm.getWidth(), cm.getHeight());
     	JsonManager.parseJsonFile("lol",cm.getArrayCopy(),cm.getWidth(),cm.getHeight());
+
     }
 }
