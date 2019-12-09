@@ -1,0 +1,7 @@
+"menu/popup/menuitem","menu/id","menu/value","menu/popup/menuitem/value","menu/popup/menuitem/onclick","test/id"
+"","file","File","New","CreateNewDoc()","file"
+"","","","New","OpenDoc()",""
+"","","","Close","CloseDoc()",""
+"1","","","","",""
+"2","","","","",""
+"3","","","","",""

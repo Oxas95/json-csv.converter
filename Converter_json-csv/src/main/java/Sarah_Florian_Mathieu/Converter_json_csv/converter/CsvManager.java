@@ -1,4 +1,4 @@
-package Sarah_Florian_Mathieu.Converter_json_csv;
+package Sarah_Florian_Mathieu.Converter_json_csv.converter;
 
 import java.io.BufferedWriter;
 import java.io.File;
