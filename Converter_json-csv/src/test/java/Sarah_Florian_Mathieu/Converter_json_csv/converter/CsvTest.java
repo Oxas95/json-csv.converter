@@ -1,4 +1,4 @@
-package Sarah_Florian_Mathieu.Converter_json_csv;
+package Sarah_Florian_Mathieu.Converter_json_csv.converter;
 
 import static org.junit.Assert.*;
 
@@ -102,7 +102,7 @@ public class CsvTest {
 
 	}
 	//test avec gestion des ""
-	@Test
+	@Test(expected=IOException.class)
 	public void TestConstructeur5CSV() throws IOException {
 		
 		OutputStreamWriter fw;
@@ -123,21 +123,7 @@ public class CsvTest {
 	
 	@Test
 	public void TestConstructeur6CSV() throws IOException {
-		
-		OutputStreamWriter fw;
-		 fw = new OutputStreamWriter(new FileOutputStream(f));
-		    fw.write("marque;nom;quantité;produit;prix\n"
-
-					+ "Andros;yaourt au citron;2;yaourt;1,50\n"
-
-					+ "La laitière;yaourt à la vanille;5;yaourt;2.50\n");
-		  fw.close();
-		
-		CsvManager csv = new CsvManager ("CsvTest.csv");
-		 
-		System.out.print("Test6:\n");
-		System.out.println("Width :"+ csv.getWidth()+ "  and Height:"+ csv.getHeight());
-		assertTrue(csv.getWidth()== 5);
+	
 
 	}
 	
