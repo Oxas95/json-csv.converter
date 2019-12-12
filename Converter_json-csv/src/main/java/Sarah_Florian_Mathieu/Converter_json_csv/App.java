@@ -15,8 +15,8 @@ public enum App
 
     public static void main( String[] args ) throws IOException
     {
-    	CsvManager cm = new CsvManager("toJson.csv");
-    	JsonManager.parseJsonFile("jsonTest",cm.getArrayCopy(),cm.getWidth(),cm.getHeight());
-    	
+    	//CsvManager cm = new CsvManager("toJson.csv");
+    	//JsonManager.parseJsonFile("jsonTest",cm.getArrayCopy(),cm.getWidth(),cm.getHeight());
+    	JsonManager jm = new JsonManager("jsonTest2.json");
     }
 }

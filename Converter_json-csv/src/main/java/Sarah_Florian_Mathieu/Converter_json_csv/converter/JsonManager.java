@@ -1,11 +1,14 @@
 package Sarah_Florian_Mathieu.Converter_json_csv.converter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Scanner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,11 +20,84 @@ public class JsonManager {
 
     JSONObject jo = null;
 
-    public JsonManager() {
-        jo = new JSONObject();
+    public JsonManager(String existingFile) throws IOException {
+    	Scanner s = new Scanner(new File(existingFile));
+    	String json = "";
+    	while(s.hasNext()) {
+    		json += s.nextLine();
+    	}
+        jo = new JSONObject(json);
+        String tj = "traitementJson";
+        parseJsonTree(jo,tj);
+    }
+    
+    private void parseJsonTree(JSONObject jo, String path) throws IOException {
+    	int i; 
+    	Object o;
+    	String subPath;
+    	Iterator<String> is = jo.keys();
+    	while(is.hasNext()) {
+    		subPath = is.next();
+    		System.out.println(subPath);
+    		o = jo.get(subPath);
+    		if(o.getClass() != JSONObject.class) {
+    			writeValues(path + '/' + subPath, o);
+    		}
+    		else {
+    			parseJsonTree(jo.getJSONObject(subPath), path + '/' + subPath);
+    		}
+    	}
     }
 
-    private static void parseTreeJson(String[][] csv, int width, int height) throws IOException {
+    private void writeValues(String path, Object o) throws IOException {
+    	File f = new File(path);
+    	f.mkdirs();
+    	f = new File(path + '/' + "valeur.txt");
+    	f.createNewFile();
+    	OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(path + '/' + "valeur.txt"));
+    	if(o.getClass() != JSONArray.class) {
+    		writeOneValue(o, fw);
+    	}
+		else {
+			JSONArray ja = (JSONArray) o;
+			int i;
+			for(i = 0; i < ja.length(); i++) {
+				if(ja.get(i).getClass() != JSONObject.class) writeOneValue(ja.get(i), fw);
+				else if (ja.get(i).getClass() == JSONObject.class){
+					parseJsonTree((JSONObject) ja.get(i), path);
+				}
+				else if (ja.get(i).getClass() == JSONArray.class){ // a revoir
+					JSONObject jo = new JSONObject();
+					File u;
+					int j = 0;
+					String us;
+					do {
+						u = new File(path + '/' + "undefined" + j);
+						us = "undefined" + j;
+					}while(u.exists());
+					f.mkdirs();
+					jo.put(us, ja.get(i));
+					parseJsonTree(jo, path + '/' + us);
+				}
+			}
+		}
+    	fw.close();
+	}
+    
+    private void writeOneValue(Object o, OutputStreamWriter fw) throws IOException {
+    	if(o.getClass() == String.class) {
+			fw.write( (String) o);
+		}
+		else if (o.getClass() == Integer.class) {
+			fw.write( (Integer) o);
+		}
+		else if (o.getClass() == Double.class) {
+			fw.write((Double) o + "");
+		}
+    	fw.write("\n");
+    }
+
+	private static void parseTreeJson(String[][] csv, int width, int height) throws IOException {
         String s = "", tj = "traitementJson";
 
         File f = new File(tj);
