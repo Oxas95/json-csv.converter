@@ -6,13 +6,17 @@ import Sarah_Florian_Mathieu.Converter_json_csv.converter.CsvManager;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.JsonManager;
 
 /**
- * Hello world!
- *
+ * Enum which contains main function
+ * 
  */
 public enum App 
 {
 	APPLICATION;
 
+    /**
+     * @return void
+     * main function which launches the converter by calling CsvManager or JsonManager methods
+     */
     public static void main( String[] args ) throws IOException
     {
     	//CsvManager cm = new CsvManager("toJson.csv");
