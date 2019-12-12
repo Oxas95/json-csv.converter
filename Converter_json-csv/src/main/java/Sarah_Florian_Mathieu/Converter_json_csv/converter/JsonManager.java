@@ -31,14 +31,12 @@ public class JsonManager {
         parseJsonTree(jo,tj);
     }
     
-    private void parseJsonTree(JSONObject jo, String path) throws IOException {
-    	int i; 
+    private void parseJsonTree(JSONObject jo, String path) throws IOException { 
     	Object o;
     	String subPath;
     	Iterator<String> is = jo.keys();
     	while(is.hasNext()) {
     		subPath = is.next();
-    		System.out.println(subPath);
     		o = jo.get(subPath);
     		if(o.getClass() != JSONObject.class) {
     			writeValues(path + '/' + subPath, o);
@@ -49,35 +47,38 @@ public class JsonManager {
     	}
     }
 
-    private void writeValues(String path, Object o) throws IOException {
+    private void writeValues(String path, Object o) throws IOException { //faire en sorte que valeur.txt ne se crée que si on ecrit dedans
     	File f = new File(path);
     	f.mkdirs();
     	f = new File(path + '/' + "valeur.txt");
     	f.createNewFile();
     	OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(path + '/' + "valeur.txt"));
     	if(o.getClass() != JSONArray.class) {
+    		
     		writeOneValue(o, fw);
     	}
 		else {
 			JSONArray ja = (JSONArray) o;
 			int i;
 			for(i = 0; i < ja.length(); i++) {
-				if(ja.get(i).getClass() != JSONObject.class) writeOneValue(ja.get(i), fw);
+				if(ja.get(i).getClass() != JSONObject.class && ja.get(i).getClass() != JSONArray.class) {
+					writeOneValue(ja.get(i), fw);
+				}
 				else if (ja.get(i).getClass() == JSONObject.class){
 					parseJsonTree((JSONObject) ja.get(i), path);
 				}
-				else if (ja.get(i).getClass() == JSONArray.class){ // a revoir
+				else if (ja.get(i).getClass() == JSONArray.class){
 					JSONObject jo = new JSONObject();
 					File u;
 					int j = 0;
 					String us;
 					do {
-						u = new File(path + '/' + "undefined" + j);
-						us = "undefined" + j;
+						us = "undefined" + j++;
+						u = new File(path + '/' + us);
 					}while(u.exists());
-					f.mkdirs();
+					u.mkdirs();
 					jo.put(us, ja.get(i));
-					parseJsonTree(jo, path + '/' + us);
+					parseJsonTree(jo, path);
 				}
 			}
 		}
@@ -86,13 +87,16 @@ public class JsonManager {
     
     private void writeOneValue(Object o, OutputStreamWriter fw) throws IOException {
     	if(o.getClass() == String.class) {
-			fw.write( (String) o);
+    		String s = (String) o;
+			fw.write(s);
 		}
 		else if (o.getClass() == Integer.class) {
-			fw.write( (Integer) o);
+			int i = (Integer) o;
+			fw.write(Integer.toString(i));
 		}
 		else if (o.getClass() == Double.class) {
-			fw.write((Double) o + "");
+			double d = (Double) o;
+			fw.write(Double.toString(d));
 		}
     	fw.write("\n");
     }
