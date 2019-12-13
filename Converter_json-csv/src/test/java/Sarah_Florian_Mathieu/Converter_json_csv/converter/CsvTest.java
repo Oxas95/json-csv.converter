@@ -17,6 +17,7 @@ import Sarah_Florian_Mathieu.Converter_json_csv.converter.CsvManager;
 
 
 public class CsvTest {
+	
 	private File f;
 	
 	
@@ -122,11 +123,96 @@ public class CsvTest {
 	}
 	
 	@Test
-	public void TestConstructeur6CSV() throws IOException {
-	
+	public void TestgetCSV() throws IOException {
+		
+		OutputStreamWriter fw;
+		 fw = new OutputStreamWriter(new FileOutputStream(f));
+		    fw.write("marque,nom,quantité,produit,prix\n"
+
+					+ "Andros,yaourt au citron,fraise,2,yaourt\n"
+
+					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
+		  fw.close();
+		
+		CsvManager csv = new CsvManager ("CsvTest.csv");
+		 
+		System.out.print("Test6:\n");
+		System.out.println("Width :"+ csv.getWidth()+ "  and Height:"+ csv.getHeight());
+		System.out.println("String:"+ csv.get(4,2));
+		assertEquals(csv.get(0,0),"marque");
+
+	}
+	@Test
+	public void TestsetCSV() throws IOException {
+		
+		OutputStreamWriter fw;
+		 fw = new OutputStreamWriter(new FileOutputStream(f));
+		    fw.write("marque,nom,quantité,produit,prix\n"
+
+					+ "Andros,yaourt au citron,fraise,2,yaourt\n"
+
+					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
+		  fw.close();
+		
+		CsvManager csv = new CsvManager ("CsvTest.csv");
+		
+		
+		System.out.print("Test7:\n");
+		System.out.println("Width :"+ csv.getWidth()+ "  and Height:"+ csv.getHeight());
+		System.out.println("String:"+ csv.get(1,1));
+		
+		csv.set("test",1,1);
+		
+		System.out.println("String:"+ csv.get(1,1));
+		
+		assertEquals(csv.get(1,1),"test");
+
+	}
+	@Test
+	public void TestcopyCSV() throws IOException {
+		
+		OutputStreamWriter fw;
+		 fw = new OutputStreamWriter(new FileOutputStream(f));
+		    fw.write("marque,nom,quantité,produit,prix\n"
+
+					+ "Andros,yaourt au citron,fraise,2,yaourt\n"
+
+					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
+		  fw.close();
+		
+		CsvManager csv = new CsvManager ("CsvTest.csv");
+		
+		
+		System.out.print("Test8:\n");
+		
+		
+		Object[][] String = null;
+		String[csv.getWidth()][csv.getHeight()] = csv.getArrayCopy();
+		
+		System.out.println("String:"+ csv.get(1,1));
+		System.out.println("String:"+ String[1][1]);
+		
+		assertEquals(csv.get(1,1),String[1][1]);
 
 	}
 	
+	@Test
+	public void TestparserCSV() throws IOException {
+		
+		OutputStreamWriter fw;
+		 fw = new OutputStreamWriter(new FileOutputStream(f));
+		    fw.write("marque,nom,quantité,produit,prix\n"
+
+					+ "Andros,yaourt au citron,fraise,2,yaourt\n"
+
+					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
+		  fw.close();
+		
+		CsvManager csv = new CsvManager ("CsvTest.csv");
+		CsvManager.parseCsvFile("test", csv.getArrayCopy(), csv.getWidth(), csv.getHeight());
+		
+
+	}
 	
 	
 
