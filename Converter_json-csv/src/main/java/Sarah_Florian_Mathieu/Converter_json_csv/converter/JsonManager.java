@@ -18,118 +18,208 @@ import org.json.JSONObject;
 
 public class JsonManager {
 
+	/**
+	 * separator between a key and his subKey
+	 */
     public static final char separator = '/';
 
-    JSONObject jo = null;
-    Map<String,Object> data;
-
-    public JsonManager(String existingFile) throws IOException {
-    	data = new HashMap<String, Object> ();
-    	Scanner s = new Scanner(new File(existingFile));
-    	String json = "";
-    	while(s.hasNext()) {
-    		json += s.nextLine();
-    	}
-    	s.close();
-        jo = new JSONObject(json);
-        String tj = "traitementJson";
-        parseJsonTree(jo,tj);
-        parseTreeList(new File(tj));
-    }
+	/**
+	 * how many lines
+	 */
+	private int hauteur = 2;
+	
+	/**
+	 * how many values by line
+	 */
+	private int largeur = 0;
+	
+	/**
+	 * store values of json file like in csv
+	 */
+	private String [][] json = null;
     
-    private void addToList(File f) throws FileNotFoundException {
-    	Scanner s = new Scanner(f);
-    	ArrayList<String> values = new ArrayList<String> ();
-    	while(s.hasNext()) values.add(s.nextLine());
-    	String key = f.toString().substring("traitementJson".length(),f.toString().length() - "valeur.txt".length());
-    	data.put(key, values);
-    	System.out.println(key);
-    	s.close();
-    }
-    
-    private void parseTreeList(File f) throws FileNotFoundException {
-		File[] sf = f.listFiles();
-		int i;
-		if(sf != null) {
-			for(i = 0; i < sf.length; i++) {
-				if(sf[i].getName() == "valeur.txt") {
-					addToList(sf[i]);
-				}
-				else {
-					parseTreeList(sf[i]);
-				}
-			}
+	/**
+	 * all values of array separated with ',' and lines with '\n'
+	 */
+	public String toString() {
+		int i, j;
+		String s = "";
+		for(j = 0; j < hauteur; j++) {
+        	for(i = 0; i < largeur - 1; i++) {
+        		s += json[i][j] + ',';
+        	}
+        	s += json[i][j] + '\n';
+        }
+		return s;
+	}
+	
+	/**
+	 * getter for width of array
+	 * @return width of array
+	 */
+	public int getWidth() {
+		return largeur;
+	}
+	
+	/**
+	 * getter for height of array
+	 * @return height of array
+	 */
+	public int getHeight() {
+		return hauteur;
+	}
+	
+	/**
+	 * get a value in the array
+	 * @param i which row
+	 * @param j which line
+	 * @return value in the array at row i, line j if possible. Else return null
+	 */
+	public String get(int i, int j) {
+		try {
+			return json[i][j];	
+		}
+		catch(Exception e) {
+			return null;
 		}
 	}
+	
+	/**
+	 * set a value in the array
+	 * @param newString string to store
+	 * @param i which row
+	 * @param j which line
+	 */
+	public void set(String newString, int i, int j) {
+        System.out.println(json);
+        try {
+        	json[i][j] = newString;
+        }catch (Exception e) {}
+	}
+	
+	/**
+	 * copy the array and return it
+	 * @return copy of array
+	 */
+	public String[][] getArrayCopy(){
+		String[][] copy = new String[largeur][hauteur];
+		int i,j;
+		for(j = 0; j < hauteur; j++) {
+			for(i = 0; i <largeur; i++) {
+				copy[i][j] = new String(json[i][j]);
+			}
+		}
+		return copy;
+	}
+    
+	public static String fileToString(String path) throws FileNotFoundException {
+		Scanner s = new Scanner(new File(path));
+		String file = "";
+		while(s.hasNext()) {
+    		file += s.nextLine();
+    	}
+    	s.close();
+    	return file;
+	}
+	
+    @SuppressWarnings("unchecked") //ligne : ao = (ArrayList<Object>) data.get(key);    -> toujours de type ArrayList<Object> 
+	public JsonManager(String existingFile) throws FileNotFoundException {
+    	Map<String,Object> data = new HashMap<String, Object> ();
+    	
+    	String key;
+    	ArrayList<Object> ao;
+    	JSONObject jo = new JSONObject(JsonManager.fileToString(existingFile));
+        String tj = "traitementJson";
+        
+        parseJsonList(jo,tj, data);
+        
+        //remplis le tableau avec la liste et initialise les valeurs largeur et hauteur
+        largeur = data.size();
+        //hauteur défini durant la construction de data
+        
+        json = new String[largeur][hauteur];
+        
+        int i = 0, j;
+        Iterator<String> is = data.keySet().iterator();
+        while(is.hasNext()) {
+        	key = is.next();
+        	ao = (ArrayList<Object>) data.get(key);
+        	json[i][0] = new String(key);
+        	j = 1;
+        	for(Object o : ao) {
+        		json[i][j] = o.toString();
+        		j++;
+        	}
+        	i++;
+        }
+        
+      //remplir les cases à null par une chaine vide
+        for(i = 0; i < largeur; i++) { 
+	        for(j = 1; j < hauteur; j++) {
+	        	if(json[i][j] == null) json[i][j] = "";
+	        }
+        }
+    }
 
-    private void parseJsonTree(JSONObject jo, String path) throws IOException { 
+    private void parseJsonList(JSONObject jo, String path, Map<String, Object> data) { 
     	Object o;
     	String subPath;
     	Iterator<String> is = jo.keys();
-    	while(is.hasNext()) {
+    	while(is.hasNext()) { //parcours des clés
     		subPath = is.next();
     		o = jo.get(subPath);
     		if(o.getClass() != JSONObject.class) {
-    			writeValues(path + '/' + subPath, o);
+    			addValues(path + separator + subPath, o, data);
     		}
     		else {
-    			parseJsonTree(jo.getJSONObject(subPath), path + '/' + subPath);
+    			parseJsonList(jo.getJSONObject(subPath), path + separator + subPath, data); //traitement du sous-JSONObject
     		}
     	}
     }
 
-    private void writeValues(String path, Object o) throws IOException { 
-    	File f = new File(path);
-    	f.mkdirs();
-    	f = new File(path + '/' + "valeur.txt");
-    	OutputStreamWriter fw = null; 
-    	if(o.getClass() != JSONArray.class) {
-    		if(fw == null) fw = new OutputStreamWriter(new FileOutputStream(path + '/' + "valeur.txt"));
-    		writeOneValue(o, fw);
+    private void addValues(String path, Object o, Map<String, Object> data) {  
+    	if(o.getClass() != JSONArray.class) { //une valeur quelconque
+    		addToList(o, path, data);
     	}
-		else {
+		else { //traitement de chaque valeur du tableau
 			JSONArray ja = (JSONArray) o;
 			int i;
 			for(i = 0; i < ja.length(); i++) {
-				if(ja.get(i).getClass() != JSONObject.class && ja.get(i).getClass() != JSONArray.class) {
-					fw = new OutputStreamWriter(new FileOutputStream(path + '/' + "valeur.txt"));
-					writeOneValue(ja.get(i), fw);
+				if(ja.get(i).getClass() != JSONObject.class && ja.get(i).getClass() != JSONArray.class) { //une valeur quelconque
+					addToList(ja.get(i), path, data);
 				}
-				else if (ja.get(i).getClass() == JSONObject.class){
-					parseJsonTree((JSONObject) ja.get(i), path);
+				else if (ja.get(i).getClass() == JSONObject.class){ //le tableau contient un JSONObject à traiter
+					parseJsonList((JSONObject) ja.get(i), path, data);
 				}
-				else if (ja.get(i).getClass() == JSONArray.class){
+				else if (ja.get(i).getClass() == JSONArray.class){ //tableau dans un tableau
 					JSONObject jo = new JSONObject();
-					File u;
 					int j = 0;
 					String us;
-					do {
+					do { //génération d'une clé sans nom qui n'a pas déjà été généré pour identifier un tableau dans un tableau
 						us = "undefined" + j++;
-						u = new File(path + '/' + us);
-					}while(u.exists());
-					u.mkdirs();
+					}while(data.containsKey(path.substring(("traitementJson" + separator).length(),path.length()) + separator + us));
 					jo.put(us, ja.get(i));
-					parseJsonTree(jo, path);
+					parseJsonList(jo, path, data); //traitement du nouveau JSONObject contenant la clé généré associé au sous-tableau du tableau courant
 				}
 			}
 		}
-    	if(fw != null) fw.close();
 	}
     
-    private void writeOneValue(Object o, OutputStreamWriter fw) throws IOException {
-    	if(o.getClass() == String.class) {
-    		String s = (String) o;
-			fw.write(s);
-		}
-		else if (o.getClass() == Integer.class) {
-			int i = (Integer) o;
-			fw.write(Integer.toString(i));
-		}
-		else if (o.getClass() == Double.class) {
-			double d = (Double) o;
-			fw.write(Double.toString(d));
-		}
-    	fw.write("\n");
+    @SuppressWarnings("unchecked") //ligne : ((ArrayList<Object>) data.get(key)).add(o);    -> toujours de type ArrayList<Object> 
+	private void addToList(Object o, String path, Map<String, Object> data) {
+    	String key = path.substring(("traitementJson" + separator).length(),path.length());
+    	if(data.containsKey(key)) { //stocke la valeur dans la liste correspondant à la clé
+    		
+    		((ArrayList<Object>) data.get(key)).add(o);
+    		int size = ((ArrayList<Object>) data.get(key)).size();
+    		
+    		if(hauteur < size + 1) hauteur = size + 1; //calcule la hauteur maximale à chaque mise à jour de la liste de valeurs pour plus tard
+    	}
+    	else { //génère une liste associé à la clé et y insère la valeur puis stocke
+    		ArrayList<Object> values = new ArrayList<Object>();
+    		values.add(o);
+    		data.put(key, values);
+    	}
     }
 
 	private static void parseTreeJson(String[][] csv, int width, int height) throws IOException {

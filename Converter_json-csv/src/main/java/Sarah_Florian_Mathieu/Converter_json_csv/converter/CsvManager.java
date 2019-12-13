@@ -99,10 +99,15 @@ public class CsvManager {
 	 * get a value in the array
 	 * @param i which row
 	 * @param j which line
-	 * @return value in the array at row i, line j
+	 * @return value in the array at row i, line j if possible. Else return null
 	 */
 	public String get(int i, int j) {
-		return csv[i][j];
+		try {
+			return csv[i][j];	
+		}
+		catch(Exception e) {
+			return null;
+		}
 	}
 	
 	/**
@@ -113,7 +118,9 @@ public class CsvManager {
 	 */
 	public void set(String newString, int i, int j) {
         System.out.println(csv);
-		csv[i][j] = newString;
+        try {
+        	csv[i][j] = newString;
+        }catch (Exception e) {}
 	}
 	
 	/**

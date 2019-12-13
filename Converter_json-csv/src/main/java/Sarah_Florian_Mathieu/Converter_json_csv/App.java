@@ -1,6 +1,5 @@
 package Sarah_Florian_Mathieu.Converter_json_csv;
 
-import java.io.File;
 import java.io.IOException;
 
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.JsonManager;
@@ -24,5 +23,6 @@ public enum App
     	//CsvManager cm = new CsvManager("toJson.csv");
     	//JsonManager.parseJsonFile("jsonTest",cm.getArrayCopy(),cm.getWidth(),cm.getHeight());
     	JsonManager jm = new JsonManager("jsonTest2.json");
+    	System.out.println(jm);
     }
 }
