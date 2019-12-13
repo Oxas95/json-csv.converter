@@ -1,22 +1,24 @@
 package Sarah_Florian_Mathieu.Converter_json_csv;
 
+import java.io.File;
 import java.io.IOException;
 
-import Sarah_Florian_Mathieu.Converter_json_csv.converter.CsvManager;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.JsonManager;
 
 /**
- * Enum which contains main function
  * 
+ * @author user
+ *
  */
 public enum App 
 {
 	APPLICATION;
-
-    /**
-     * @return void
-     * main function which launches the converter by calling CsvManager or JsonManager methods
-     */
+	
+	/**
+	 * 
+	 * @param args not used
+	 * @throws IOException if problem to read a file used by the converter
+	 */
     public static void main( String[] args ) throws IOException
     {
     	//CsvManager cm = new CsvManager("toJson.csv");

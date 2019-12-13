@@ -7,7 +7,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.json.JSONArray;
@@ -19,18 +21,47 @@ public class JsonManager {
     public static final char separator = '/';
 
     JSONObject jo = null;
+    Map<String,Object> data;
 
     public JsonManager(String existingFile) throws IOException {
+    	data = new HashMap<String, Object> ();
     	Scanner s = new Scanner(new File(existingFile));
     	String json = "";
     	while(s.hasNext()) {
     		json += s.nextLine();
     	}
+    	s.close();
         jo = new JSONObject(json);
         String tj = "traitementJson";
         parseJsonTree(jo,tj);
+        parseTreeList(new File(tj));
     }
     
+    private void addToList(File f) throws FileNotFoundException {
+    	Scanner s = new Scanner(f);
+    	ArrayList<String> values = new ArrayList<String> ();
+    	while(s.hasNext()) values.add(s.nextLine());
+    	String key = f.toString().substring("traitementJson".length(),f.toString().length() - "valeur.txt".length());
+    	data.put(key, values);
+    	System.out.println(key);
+    	s.close();
+    }
+    
+    private void parseTreeList(File f) throws FileNotFoundException {
+		File[] sf = f.listFiles();
+		int i;
+		if(sf != null) {
+			for(i = 0; i < sf.length; i++) {
+				if(sf[i].getName() == "valeur.txt") {
+					addToList(sf[i]);
+				}
+				else {
+					parseTreeList(sf[i]);
+				}
+			}
+		}
+	}
+
     private void parseJsonTree(JSONObject jo, String path) throws IOException { 
     	Object o;
     	String subPath;
@@ -47,14 +78,13 @@ public class JsonManager {
     	}
     }
 
-    private void writeValues(String path, Object o) throws IOException { //faire en sorte que valeur.txt ne se crée que si on ecrit dedans
+    private void writeValues(String path, Object o) throws IOException { 
     	File f = new File(path);
     	f.mkdirs();
     	f = new File(path + '/' + "valeur.txt");
-    	f.createNewFile();
-    	OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(path + '/' + "valeur.txt"));
+    	OutputStreamWriter fw = null; 
     	if(o.getClass() != JSONArray.class) {
-    		
+    		if(fw == null) fw = new OutputStreamWriter(new FileOutputStream(path + '/' + "valeur.txt"));
     		writeOneValue(o, fw);
     	}
 		else {
@@ -62,6 +92,7 @@ public class JsonManager {
 			int i;
 			for(i = 0; i < ja.length(); i++) {
 				if(ja.get(i).getClass() != JSONObject.class && ja.get(i).getClass() != JSONArray.class) {
+					fw = new OutputStreamWriter(new FileOutputStream(path + '/' + "valeur.txt"));
 					writeOneValue(ja.get(i), fw);
 				}
 				else if (ja.get(i).getClass() == JSONObject.class){
@@ -82,7 +113,7 @@ public class JsonManager {
 				}
 			}
 		}
-    	fw.close();
+    	if(fw != null) fw.close();
 	}
     
     private void writeOneValue(Object o, OutputStreamWriter fw) throws IOException {
