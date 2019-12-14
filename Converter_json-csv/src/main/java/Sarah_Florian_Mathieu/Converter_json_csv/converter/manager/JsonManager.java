@@ -1,4 +1,4 @@
-package Sarah_Florian_Mathieu.Converter_json_csv.converter;
+package Sarah_Florian_Mathieu.Converter_json_csv.converter.manager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,97 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class JsonManager {
-
-	/**
-	 * separator between a key and his subKey
-	 */
-    public static final char separator = '/';
-
-	/**
-	 * how many lines
-	 */
-	private int hauteur = 2;
-	
-	/**
-	 * how many values by line
-	 */
-	private int largeur = 0;
-	
-	/**
-	 * store values of json file like in csv
-	 */
-	private String [][] json = null;
-    
-	/**
-	 * all values of array separated with ',' and lines with '\n'
-	 */
-	public String toString() {
-		int i, j;
-		String s = "";
-		for(j = 0; j < hauteur; j++) {
-        	for(i = 0; i < largeur - 1; i++) {
-        		s += json[i][j] + ',';
-        	}
-        	s += json[i][j] + '\n';
-        }
-		return s;
-	}
-	
-	/**
-	 * getter for width of array
-	 * @return width of array
-	 */
-	public int getWidth() {
-		return largeur;
-	}
-	
-	/**
-	 * getter for height of array
-	 * @return height of array
-	 */
-	public int getHeight() {
-		return hauteur;
-	}
-	
-	/**
-	 * get a value in the array
-	 * @param i which row
-	 * @param j which line
-	 * @return value in the array at row i, line j if possible. Else return null
-	 * @throws IndexOutOfBoundsException if i or j is invalid
-	 */
-	public String get(int i, int j) throws IndexOutOfBoundsException {
-		return json[i][j];
-	}
-	
-	/**
-	 * set a value in the array
-	 * @param newString string to store
-	 * @param i which row
-	 * @param j which line
-	 */
-	public void set(String newString, int i, int j) {
-        System.out.println(json);
-        try {
-        	json[i][j] = newString;
-        }catch (Exception e) {}
-	}
-	
-	/**
-	 * copy the array and return it
-	 * @return copy of array
-	 */
-	public String[][] getArrayCopy(){
-		String[][] copy = new String[largeur][hauteur];
-		int i,j;
-		for(j = 0; j < hauteur; j++) {
-			for(i = 0; i <largeur; i++) {
-				copy[i][j] = new String(json[i][j]);
-			}
-		}
-		return copy;
-	}
+public class JsonManager extends Manager{
     
 	public static String fileToString(String path) throws FileNotFoundException {
 		Scanner s = new Scanner(new File(path));
@@ -138,17 +48,17 @@ public class JsonManager {
         largeur = data.size();
         //hauteur défini durant la construction de data
         
-        json = new String[largeur][hauteur];
+        this.data = new String[largeur][hauteur];
         
         int i = 0, j;
         Iterator<String> is = data.keySet().iterator();
         while(is.hasNext()) {
         	key = is.next();
         	ao = (ArrayList<Object>) data.get(key);
-        	json[i][0] = new String(key);
+        	this.data[i][0] = new String(key);
         	j = 1;
         	for(Object o : ao) {
-        		json[i][j] = o.toString();
+        		this.data[i][j] = o.toString();
         		j++;
         	}
         	i++;
@@ -157,7 +67,7 @@ public class JsonManager {
       //remplir les cases à null par une chaine vide
         for(i = 0; i < largeur; i++) { 
 	        for(j = 1; j < hauteur; j++) {
-	        	if(json[i][j] == null) json[i][j] = "";
+	        	if(this.data[i][j] == null) this.data[i][j] = "";
 	        }
         }
     }

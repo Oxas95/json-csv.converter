@@ -1,4 +1,4 @@
-package Sarah_Florian_Mathieu.Converter_json_csv.converter;
+package Sarah_Florian_Mathieu.Converter_json_csv.converter.manager;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,22 +14,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
-public class CsvManager {
-	
-	/**
-	 * how many lines
-	 */
-	private int hauteur = 0;
-	
-	/**
-	 * how many values by line
-	 */
-	private int largeur = 0;
-	
-	/**
-	 * store values of csv file
-	 */
-	private String [][] csv = null;
+public class CsvManager extends Manager{
 	
 	/**
 	 * read a csv file and store values in an array
@@ -37,8 +22,9 @@ public class CsvManager {
 	 * @throws IOException if there is a problem when reading file
 	 * @throws NullPointerException existingFile is null
 	 * @throws IllegalArgumentException existingFile is an existing file
+	 * @throws CsvException if too many values in a line
 	 */
-	public CsvManager(String existingFile) throws IOException, NullPointerException, IllegalArgumentException {
+	public CsvManager(String existingFile) throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		if(existingFile != null) {
 			if(existingFile.endsWith(".csv") == false) throw new IllegalArgumentException();
 		}
@@ -52,94 +38,26 @@ public class CsvManager {
         hauteur = values.size() + 1;
         
         
-        csv = new String[largeur][hauteur];
+        this.data = new String[largeur][hauteur];
         
         //verifier le nombre de valeurs dans les lignes (s'il y en a trop)
         
         int i,j;
         for(j = 1; j < hauteur; j++) {
+        	if(values.get(j-1).size() != largeur) throw new CsvException();
         	for(i = 0; i < largeur; i++) {
-        		csv[i][j] = new String(values.get(j-1).get(i));
+        		this.data[i][j] = new String(values.get(j-1).get(i));
         	}
         }
         
         for(i = 0; i < largeur; i++) {
-        	csv[i][0] = new String(header.getHeaderNames().get(i));
+        	this.data[i][0] = new String(header.getHeaderNames().get(i));
         }
         
+        header.close();
         reader.close();
         header.close();
         
-	}
-	
-	/**
-	 * all values of array separated with ',' and lines with '\n'
-	 */
-	public String toString() {
-		int i, j;
-		String s = "";
-		for(j = 0; j < hauteur; j++) {
-        	for(i = 0; i < largeur - 1; i++) {
-        		s += csv[i][j] + ',';
-        	}
-        	s += csv[i][j] + '\n';
-        }
-		return s;
-	}
-	
-	/**
-	 * getter for width of array
-	 * @return width of array
-	 */
-	public int getWidth() {
-		return largeur;
-	}
-	
-	/**
-	 * getter for height of array
-	 * @return height of array
-	 */
-	public int getHeight() {
-		return hauteur;
-	}
-	
-	/**
-	 * get a value in the array
-	 * @param i which row
-	 * @param j which line
-	 * @return value in the array at row i, line j if possible. Else return null
-	 * @throws IndexOutOfBoundsException if i or j is invalid
-	 */
-	public String get(int i, int j) throws IndexOutOfBoundsException {
-		return csv[i][j];
-	}
-	
-	/**
-	 * set a value in the array
-	 * @param newString string to store
-	 * @param i which row
-	 * @param j which line
-	 */
-	public void set(String newString, int i, int j) {
-        System.out.println(csv);
-        try {
-        	csv[i][j] = newString;
-        }catch (IndexOutOfBoundsException e) {}
-	}
-	
-	/**
-	 * copy the array and return it
-	 * @return copy of array
-	 */
-	public String[][] getArrayCopy(){
-		String[][] copy = new String[largeur][hauteur];
-		int i,j;
-		for(j = 0; j < hauteur; j++) {
-			for(i = 0; i <largeur; i++) {
-				copy[i][j] = new String(csv[i][j]);
-			}
-		}
-		return copy;
 	}
 	
 	/**

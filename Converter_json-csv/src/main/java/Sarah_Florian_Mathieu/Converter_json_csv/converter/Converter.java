@@ -5,6 +5,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvException;
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvManager;
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.JsonManager;
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.TypeFile;
+
 public class Converter {
 
 	/**
@@ -22,11 +27,9 @@ public class Converter {
 	 */
 	private String [][] data = null;
 	
-	public Converter(String toConvert) throws IOException, NullPointerException{
+	public Converter(String toConvert) throws IOException, NullPointerException, IllegalArgumentException, CsvException{
 		if(toConvert == null)
 			throw new NullPointerException ();
-		else if(!toConvert.endsWith(".csv") && !toConvert.endsWith(".json"))
-			throw new IllegalArgumentException();
 		
 		else {
 			if(toConvert.endsWith(".csv")) {

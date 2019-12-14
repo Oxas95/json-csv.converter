@@ -1,4 +1,4 @@
-package Sarah_Florian_Mathieu.Converter_json_csv.converter;
+package Sarah_Florian_Mathieu.Converter_json_csv.converter.manager;
 
 public enum TypeFile {
 	JSON("json"),
