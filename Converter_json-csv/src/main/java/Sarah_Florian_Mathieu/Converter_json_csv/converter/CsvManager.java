@@ -35,8 +35,15 @@ public class CsvManager {
 	 * read a csv file and store values in an array
 	 * @param existingFile which file to read
 	 * @throws IOException if there is a problem when reading file
+	 * @throws NullPointerException existingFile is null
+	 * @throws IllegalArgumentException existingFile is an existing file
 	 */
-	public CsvManager(String existingFile) throws IOException {
+	public CsvManager(String existingFile) throws IOException, NullPointerException, IllegalArgumentException {
+		if(existingFile != null) {
+			if(existingFile.endsWith(".csv") == false) throw new IllegalArgumentException();
+		}
+		else throw new NullPointerException ();
+		
 		Reader reader = Files.newBufferedReader(Paths.get(existingFile));
         CSVParser header = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withTrim().withIgnoreEmptyLines());
         List<CSVRecord> values = header.getRecords();
@@ -47,6 +54,7 @@ public class CsvManager {
         
         csv = new String[largeur][hauteur];
         
+        //verifier le nombre de valeurs dans les lignes (s'il y en a trop)
         
         int i,j;
         for(j = 1; j < hauteur; j++) {
@@ -100,14 +108,10 @@ public class CsvManager {
 	 * @param i which row
 	 * @param j which line
 	 * @return value in the array at row i, line j if possible. Else return null
+	 * @throws IndexOutOfBoundsException if i or j is invalid
 	 */
-	public String get(int i, int j) {
-		try {
-			return csv[i][j];	
-		}
-		catch(Exception e) {
-			return null;
-		}
+	public String get(int i, int j) throws IndexOutOfBoundsException {
+		return csv[i][j];
 	}
 	
 	/**
@@ -120,7 +124,7 @@ public class CsvManager {
         System.out.println(csv);
         try {
         	csv[i][j] = newString;
-        }catch (Exception e) {}
+        }catch (IndexOutOfBoundsException e) {}
 	}
 	
 	/**
@@ -145,10 +149,11 @@ public class CsvManager {
 	 * @param width how many values in a line
 	 * @param height how many lines
 	 * @throws IOException if there is a problem when writing file
-	 * @throws IllegalArgumentException newPath is null pointer or is an existing file
+	 * @throws IllegalArgumentException newPath is an existing file
+	 * @throws NullPointerException newPath is null
 	 */
-	public static void parseCsvFile(String newPath, String[][] csv, int width, int height) throws IOException, IllegalArgumentException {
-		if(newPath == null) throw new IllegalArgumentException ();
+	public static void parseCsvFile(String newPath, String[][] csv, int width, int height) throws IOException, IllegalArgumentException, NullPointerException {
+		if(newPath == null) throw new NullPointerException ();
 		if(newPath.endsWith(".csv") == false) newPath += ".csv";
 		File f = new File(newPath);
 		if(f.exists()) {

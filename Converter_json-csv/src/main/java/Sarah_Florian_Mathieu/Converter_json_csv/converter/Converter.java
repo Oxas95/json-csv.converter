@@ -22,9 +22,9 @@ public class Converter {
 	 */
 	private String [][] data = null;
 	
-	public Converter(String toConvert) throws IOException{
+	public Converter(String toConvert) throws IOException, NullPointerException{
 		if(toConvert == null)
-			throw new IllegalArgumentException();
+			throw new NullPointerException ();
 		else if(!toConvert.endsWith(".csv") && !toConvert.endsWith(".json"))
 			throw new IllegalArgumentException();
 		
