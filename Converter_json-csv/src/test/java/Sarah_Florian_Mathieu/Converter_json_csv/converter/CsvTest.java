@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.file.NoSuchFileException;
 import java.util.Scanner;
 
 import org.junit.After;
@@ -23,20 +24,33 @@ public class CsvTest {
 	
 	
 	@Before 
-	 public void initialiser() throws IOException {
+	 public void setUp() throws IOException {
 	    f = new File("CsvTest.csv");
 	   
 	  }
 
 	 @After
-	  public void nettoyer() throws IOException {
+	  public void tearDown() throws IOException {
 		f.delete();
 	    
 	  }
-	 
+	// Test avec un fichier null
+	@Test(expected=NullPointerException.class)
+	public void TestConstructeur_Fichiernull_CSV() throws IOException {
+			
+		CsvManager csv = new CsvManager (null);
+			
+	}
+	// Test avec un fichier inexistant
+		@Test(expected=NoSuchFileException.class)
+		public void TestConstructeur_FichierInexistant_CSV() throws IOException {
+				
+			CsvManager csv = new CsvManager ("Inexist_fichier.csv");
+				
+		}
 	 // Test avec un fichier vide
 	@Test
-	public void TestConstructeur1CSV() throws IOException {
+	public void TestConstructeur_Fichiervide_CSV() throws IOException {
 			
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -50,13 +64,13 @@ public class CsvTest {
 	}
 	// Test si le constructeur fonctionne avec un fichier non vide
 	@Test
-	public void TestConstructeur2CSV() throws IOException {
-		
+	public void TestConstructeur_FichierNonVide_CSV() throws IOException {
+
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
 		    fw.write("marque,nom,quantité,produit,prix\n"
 
-					+ "Andros,yaourt au citron,fraise,2,yaourt,1.50\n"
+					+ "Andros,yaourt au citron et fraise,2,yaourt,1.50\n"
 
 					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
 		  fw.close();
@@ -67,8 +81,9 @@ public class CsvTest {
 		System.out.println("Width :"+ csv.getWidth()+ "  and Height:"+ csv.getHeight());
 
 	}
+	//Test avec un argument en trop 
 	@Test
-	public void TestConstructeur3CSV() throws IOException {
+	public void TestConstructeur_FichierLargeurtabDiff_CSV() throws IOException {
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
 		    fw.write("marque,nom,quantité,produit\n"
@@ -84,15 +99,15 @@ public class CsvTest {
 		System.out.println("Width :"+ csv.getWidth()+ "  and Height:"+ csv.getHeight());
 
 	}
-	
-	@Test
-	public void TestConstructeur4CSV() throws IOException {
+	//Test avec pas assez d'argument dans le tableau
+	@Test(expected=ArrayIndexOutOfBoundsException.class)
+	public void TestConstructeur_PasAssezArgumentTab_CSV() throws IOException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
 		    fw.write("marque,nom,quantité,produit,prix\n"
 
-					+ "Andros,yaourt au citron,fraise,2,yaourt\n"
+					+ "Andros,yaourt au citron et fraise,2,yaourt\n"
 
 					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
 		  fw.close();
@@ -105,7 +120,7 @@ public class CsvTest {
 	}
 	//test avec gestion des ""
 	@Test(expected=IOException.class)
-	public void TestConstructeur5CSV() throws IOException {
+	public void TestConstructeur_erreurEcriture_CSV() throws IOException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -140,9 +155,32 @@ public class CsvTest {
 		System.out.print("Test6:\n");
 		System.out.println("Width :"+ csv.getWidth()+ "  and Height:"+ csv.getHeight());
 		System.out.println("String:"+ csv.get(4,2));
-		assertEquals(csv.get(0,0),"marque");
+		
+		assertTrue(csv.get(0,0).equalsIgnoreCase("marque"));
 
 	}
+	
+	@Test
+	public void Testget_exceptionCaseInexistanteCSV() throws IOException {
+		
+		OutputStreamWriter fw;
+		 fw = new OutputStreamWriter(new FileOutputStream(f));
+		    fw.write("marque,nom,quantité,produit,prix\n"
+
+					+ "Andros,yaourt au citron,fraise,2,yaourt\n"
+
+					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
+		  fw.close();
+		
+		CsvManager csv = new CsvManager ("CsvTest.csv");
+		 
+		System.out.print("Test Inexist:\n");
+		System.out.println("Width :"+ csv.getWidth()+ "  and Height:"+ csv.getHeight());
+		System.out.println("String:"+ csv.get(100,2));
+	
+
+	}
+	
 	@Test
 	public void TestsetCSV() throws IOException {
 		
@@ -165,8 +203,8 @@ public class CsvTest {
 		csv.set("test",1,1);
 		
 		System.out.println("String:"+ csv.get(1,1));
+		assertTrue(csv.get(1,1).equalsIgnoreCase("test"));
 		
-		assertEquals(csv.get(1,1),"test");
 
 	}
 	@Test
@@ -187,13 +225,13 @@ public class CsvTest {
 		System.out.print("Test8:\n");
 		
 		
-		Object[][] String = null;
-		String[csv.getWidth()][csv.getHeight()] = csv.getArrayCopy();
+		String[][] copy = csv.getArrayCopy();
 		
 		System.out.println("String:"+ csv.get(1,1));
-		System.out.println("String:"+ String[1][1]);
+		System.out.println("String:"+ copy[1][1]);
 		
-		assertEquals(csv.get(1,1),String[1][1]);
+		
+		assertTrue(csv.get(1,1).equalsIgnoreCase(copy[1][1]));
 
 	}
 	
@@ -211,6 +249,8 @@ public class CsvTest {
 		
 		CsvManager csv = new CsvManager ("CsvTest.csv");
 		CsvManager.parseCsvFile("test", csv.getArrayCopy(), csv.getWidth(), csv.getHeight());
+		File t =new File("test.csv");
+		t.deleteOnExit();
 		
 
 	}

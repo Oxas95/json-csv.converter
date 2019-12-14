@@ -61,7 +61,7 @@ public class JsonTest {
 		}
 		
 		@Test
-		public void TestConstructeur3CSV() throws IOException {
+		public void TestConstructeur3Json() throws IOException {
 			
 			OutputStreamWriter fw;
 			 fw = new OutputStreamWriter(new FileOutputStream(f));
