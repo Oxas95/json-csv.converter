@@ -41,6 +41,15 @@ public class CsvTest {
 		CsvManager csv = new CsvManager (null);
 			
 	}
+	// Test avec n'est pas un csv
+		@Test(expected=IllegalArgumentException.class)
+		public void TestConstructeur_FichierNonCSV_CSV() throws IOException {
+			File t;
+			t = new File("CsvTest2.txt");
+			CsvManager csv = new CsvManager ("CsvTest2.txt");
+			t.deleteOnExit();
+				
+		}
 	// Test avec un fichier inexistant
 		@Test(expected=NoSuchFileException.class)
 		public void TestConstructeur_FichierInexistant_CSV() throws IOException {
@@ -160,14 +169,14 @@ public class CsvTest {
 
 	}
 	
-	@Test
-	public void Testget_exceptionCaseInexistanteCSV() throws IOException {
+	@Test(expected=ArrayIndexOutOfBoundsException.class)
+	public void Testget_exceptionCaseInexistanteCSV() throws IOException,ArrayIndexOutOfBoundsException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
 		    fw.write("marque,nom,quantité,produit,prix\n"
 
-					+ "Andros,yaourt au citron,fraise,2,yaourt\n"
+					+ "Andros,yaourt au citron et fraise,2,yaourt,1.5\n"
 
 					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
 		  fw.close();
@@ -188,7 +197,7 @@ public class CsvTest {
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
 		    fw.write("marque,nom,quantité,produit,prix\n"
 
-					+ "Andros,yaourt au citron,fraise,2,yaourt\n"
+					+ "Andros,yaourt au citron,2,yaourt,1.5\n"
 
 					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
 		  fw.close();
@@ -205,6 +214,26 @@ public class CsvTest {
 		System.out.println("String:"+ csv.get(1,1));
 		assertTrue(csv.get(1,1).equalsIgnoreCase("test"));
 		
+
+	}
+	@Test
+	public void Testset_exceptionCaseInexistanteCSV() throws IOException,ArrayIndexOutOfBoundsException {
+		
+		OutputStreamWriter fw;
+		 fw = new OutputStreamWriter(new FileOutputStream(f));
+		    fw.write("marque,nom,quantité,produit,prix\n"
+
+					+ "Andros,yaourt au citron,2,yaourt,1.5\n"
+
+					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
+		  fw.close();
+		
+		CsvManager csv = new CsvManager ("CsvTest.csv");
+		 
+		System.out.print("Test Inexist:\n");
+		System.out.println("Width :"+ csv.getWidth()+ "  and Height:"+ csv.getHeight());
+		csv.set("test",10,1);
+	
 
 	}
 	@Test
@@ -242,7 +271,7 @@ public class CsvTest {
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
 		    fw.write("marque,nom,quantité,produit,prix\n"
 
-					+ "Andros,yaourt au citron,fraise,2,yaourt\n"
+					+ "Andros,yaourt au citron et fraise,2,yaourt,1.5\n"
 
 					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
 		  fw.close();
@@ -254,7 +283,113 @@ public class CsvTest {
 		
 
 	}
+	//test csv->csv
+	@Test
+	public void Testparser_csv_CSV() throws IOException {
+		
+		OutputStreamWriter fw;
+		 fw = new OutputStreamWriter(new FileOutputStream(f));
+		    fw.write("marque,nom,quantité,produit,prix\n"
+
+					+ "Andros,yaourt au citron,fraise,2,yaourt\n"
+
+					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
+		  fw.close();
+		
+		CsvManager csv = new CsvManager ("CsvTest.csv");
+		CsvManager.parseCsvFile("test2", csv.getArrayCopy(), csv.getWidth(), csv.getHeight());
+		File test =new File("test2.csv");
+		CsvManager csvt = new CsvManager ("test2.csv");
+		if (csv.getHeight()==csvt.getHeight() && csv.getWidth() == csvt.getWidth())
+		{
+			int i,j;
+			
+			for (i=0;i<csv.getWidth();i++)
+			{
+				for(j=0;j<csv.getHeight();j++)
+				{
+					System.out.println("csv1:"+ csv.get(i,j)+"   csv2:"+ csv.get(i,j));
+					if(csv.get(i,j).equalsIgnoreCase(csvt.get(i, j))==false)
+					{
+						fail();
+					}
+				}
+			}
+			
+		
+		}
+		
+		test.deleteOnExit();
+		
+
+	}
 	
+	//test csv->json->csv
+		@Test
+		public void Testparser_csv_json_CSV() throws IOException, AssertionError {
+			
+			OutputStreamWriter fw;
+			 fw = new OutputStreamWriter(new FileOutputStream(f));
+			    fw.write("marque,nom,quantité,produit,prix\n"
+
+						+ "Andros,yaourt au citron,2,yaourt,1.5\n"
+
+						+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
+			  fw.close();
+			File test3 =new File("test3.csv");
+			File jst =new File("jsonTest.json");
+			  
+			CsvManager csv = new CsvManager ("CsvTest.csv");
+			JsonManager.parseJsonFile("jsonTest.json", csv.getArrayCopy(), csv.getWidth(), csv.getHeight());
+			
+	    	JsonManager js = new JsonManager("jsonTest.json");
+			CsvManager.parseCsvFile("test3.csv", js.getArrayCopy(), js.getWidth(), js.getHeight());
+			
+			CsvManager csvt = new CsvManager ("test3.csv");
+			if (csv.getHeight()==csvt.getHeight() && csv.getWidth() == csvt.getWidth())
+			{
+				int i,j;
+				
+				for (i=0;i<csv.getWidth();i++)
+				{
+					for(j=0;j<csv.getHeight();j++)
+					{
+						
+						if(csv.get(i,j).equalsIgnoreCase(csvt.get(i, j))==false)
+						{
+							fail();
+						}
+					}
+				}
+				
+			
+			}
+			
+			test3.deleteOnExit();
+			jst.deleteOnExit();
+			
+			
+
+		}
+		//test parser null
+		@Test(expected=NullPointerException.class)
+		public void Testparser_null_CSV() throws IOException {
+			
+			OutputStreamWriter fw;
+			 fw = new OutputStreamWriter(new FileOutputStream(f));
+			    fw.write("marque,nom,quantité,produit,prix\n"
+
+						+ "Andros,yaourt au citron,fraise,2,yaourt\n"
+
+						+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
+			  fw.close();
+			
+			CsvManager csv = new CsvManager ("CsvTest.csv");
+			CsvManager.parseCsvFile(null, csv.getArrayCopy(), csv.getWidth(), csv.getHeight());
+			
+			
+
+		}
 	
 
 }
