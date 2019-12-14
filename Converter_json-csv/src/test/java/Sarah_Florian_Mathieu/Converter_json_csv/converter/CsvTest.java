@@ -14,8 +14,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-
-import Sarah_Florian_Mathieu.Converter_json_csv.converter.CsvManager;
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvException;
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvManager;
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.JsonManager;
 
 
 public class CsvTest {
@@ -36,14 +37,14 @@ public class CsvTest {
 	  }
 	// Test avec un fichier null
 	@Test(expected=NullPointerException.class)
-	public void TestConstructeur_Fichiernull_CSV() throws IOException {
+	public void TestConstructeur_Fichiernull_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 			
 		CsvManager csv = new CsvManager (null);
 			
 	}
 	// Test avec n'est pas un csv
 		@Test(expected=IllegalArgumentException.class)
-		public void TestConstructeur_FichierNonCSV_CSV() throws IOException {
+		public void TestConstructeur_FichierNonCSV_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 			File t;
 			t = new File("CsvTest2.txt");
 			CsvManager csv = new CsvManager ("CsvTest2.txt");
@@ -52,14 +53,14 @@ public class CsvTest {
 		}
 	// Test avec un fichier inexistant
 		@Test(expected=NoSuchFileException.class)
-		public void TestConstructeur_FichierInexistant_CSV() throws IOException {
+		public void TestConstructeur_FichierInexistant_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 				
 			CsvManager csv = new CsvManager ("Inexist_fichier.csv");
 				
 		}
 	 // Test avec un fichier vide
 	@Test
-	public void TestConstructeur_Fichiervide_CSV() throws IOException {
+	public void TestConstructeur_Fichiervide_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 			
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -73,7 +74,7 @@ public class CsvTest {
 	}
 	// Test si le constructeur fonctionne avec un fichier non vide
 	@Test
-	public void TestConstructeur_FichierNonVide_CSV() throws IOException {
+	public void TestConstructeur_FichierNonVide_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -91,8 +92,8 @@ public class CsvTest {
 
 	}
 	//Test avec un argument en trop 
-	@Test
-	public void TestConstructeur_FichierLargeurtabDiff_CSV() throws IOException {
+	@Test(expected=CsvException.class)
+	public void TestConstructeur_FichierLargeurtabDiff_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
 		    fw.write("marque,nom,quantité,produit\n"
@@ -109,8 +110,8 @@ public class CsvTest {
 
 	}
 	//Test avec pas assez d'argument dans le tableau
-	@Test(expected=ArrayIndexOutOfBoundsException.class)
-	public void TestConstructeur_PasAssezArgumentTab_CSV() throws IOException {
+	@Test(expected=CsvException.class)
+	public void TestConstructeur_PasAssezArgumentTab_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -129,7 +130,7 @@ public class CsvTest {
 	}
 	//test avec gestion des ""
 	@Test(expected=IOException.class)
-	public void TestConstructeur_erreurEcriture_CSV() throws IOException {
+	public void TestConstructeur_erreurEcriture_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -148,7 +149,7 @@ public class CsvTest {
 	}
 	
 	@Test
-	public void TestgetCSV() throws IOException {
+	public void TestgetCSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -170,7 +171,7 @@ public class CsvTest {
 	}
 	
 	@Test(expected=ArrayIndexOutOfBoundsException.class)
-	public void Testget_exceptionCaseInexistanteCSV() throws IOException,ArrayIndexOutOfBoundsException {
+	public void Testget_exceptionCaseInexistanteCSV() throws IOException,ArrayIndexOutOfBoundsException, NullPointerException, IllegalArgumentException, CsvException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -191,7 +192,7 @@ public class CsvTest {
 	}
 	
 	@Test
-	public void TestsetCSV() throws IOException {
+	public void TestsetCSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -217,7 +218,7 @@ public class CsvTest {
 
 	}
 	@Test
-	public void Testset_exceptionCaseInexistanteCSV() throws IOException,ArrayIndexOutOfBoundsException {
+	public void Testset_exceptionCaseInexistanteCSV() throws IOException,ArrayIndexOutOfBoundsException, NullPointerException, IllegalArgumentException, CsvException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -237,7 +238,7 @@ public class CsvTest {
 
 	}
 	@Test
-	public void TestcopyCSV() throws IOException {
+	public void TestcopyCSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -265,7 +266,7 @@ public class CsvTest {
 	}
 	
 	@Test
-	public void TestparserCSV() throws IOException {
+	public void TestparserCSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -285,7 +286,7 @@ public class CsvTest {
 	}
 	//test csv->csv
 	@Test
-	public void Testparser_csv_CSV() throws IOException {
+	public void Testparser_csv_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -326,7 +327,7 @@ public class CsvTest {
 	
 	//test csv->json->csv
 		@Test
-		public void Testparser_csv_json_CSV() throws IOException, AssertionError {
+		public void Testparser_csv_json_CSV() throws IOException, AssertionError, NullPointerException, IllegalArgumentException, CsvException {
 			
 			OutputStreamWriter fw;
 			 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -336,16 +337,16 @@ public class CsvTest {
 
 						+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
 			  fw.close();
-			File test3 =new File("test3.csv");
-			File jst =new File("jsonTest.json");
+			File testcsv =new File("testcsv.csv");
+			File jst =new File("jsonTestt.json");
 			  
 			CsvManager csv = new CsvManager ("CsvTest.csv");
-			JsonManager.parseJsonFile("jsonTest.json", csv.getArrayCopy(), csv.getWidth(), csv.getHeight());
+			JsonManager.parseJsonFile("jsonTestt.json", csv.getArrayCopy(), csv.getWidth(), csv.getHeight());
 			
-	    	JsonManager js = new JsonManager("jsonTest.json");
-			CsvManager.parseCsvFile("test3.csv", js.getArrayCopy(), js.getWidth(), js.getHeight());
+	    	JsonManager js = new JsonManager("jsonTestt.json");
+			CsvManager.parseCsvFile("testcsv.csv", js.getArrayCopy(), js.getWidth(), js.getHeight());
 			
-			CsvManager csvt = new CsvManager ("test3.csv");
+			CsvManager csvt = new CsvManager ("testcsv.csv");
 			if (csv.getHeight()==csvt.getHeight() && csv.getWidth() == csvt.getWidth())
 			{
 				int i,j;
@@ -365,7 +366,7 @@ public class CsvTest {
 			
 			}
 			
-			test3.deleteOnExit();
+			testcsv.deleteOnExit();
 			jst.deleteOnExit();
 			
 			
@@ -373,7 +374,7 @@ public class CsvTest {
 		}
 		//test parser null
 		@Test(expected=NullPointerException.class)
-		public void Testparser_null_CSV() throws IOException {
+		public void Testparser_null_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 			
 			OutputStreamWriter fw;
 			 fw = new OutputStreamWriter(new FileOutputStream(f));
