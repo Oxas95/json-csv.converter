@@ -74,14 +74,10 @@ public class JsonManager {
 	 * @param i which row
 	 * @param j which line
 	 * @return value in the array at row i, line j if possible. Else return null
+	 * @throws IndexOutOfBoundsException if i or j is invalid
 	 */
-	public String get(int i, int j) {
-		try {
-			return json[i][j];	
-		}
-		catch(Exception e) {
-			return null;
-		}
+	public String get(int i, int j) throws IndexOutOfBoundsException {
+		return json[i][j];
 	}
 	
 	/**
@@ -122,8 +118,13 @@ public class JsonManager {
     	return file;
 	}
 	
-    @SuppressWarnings("unchecked") //ligne : ao = (ArrayList<Object>) data.get(key);    -> toujours de type ArrayList<Object> 
-	public JsonManager(String existingFile) throws FileNotFoundException {
+    @SuppressWarnings("unchecked")
+	public JsonManager(String existingFile) throws FileNotFoundException, NullPointerException {
+    	if(existingFile != null) {
+			if(existingFile.endsWith(".json") == false) throw new IllegalArgumentException();
+		}
+		else throw new NullPointerException ();
+    	
     	Map<String,Object> data = new HashMap<String, Object> ();
     	
     	String key;
@@ -205,7 +206,7 @@ public class JsonManager {
 		}
 	}
     
-    @SuppressWarnings("unchecked") //ligne : ((ArrayList<Object>) data.get(key)).add(o);    -> toujours de type ArrayList<Object> 
+    @SuppressWarnings("unchecked")
 	private void addToList(Object o, String path, Map<String, Object> data) {
     	String key = path.substring(("traitementJson" + separator).length(),path.length());
     	if(data.containsKey(key)) { //stocke la valeur dans la liste correspondant à la clé
@@ -360,8 +361,8 @@ public class JsonManager {
 		return jo;
     }
 
-    public static void parseJsonFile(String newPath, String[][] csv, int width, int height) throws IOException {
-    	if(newPath == null) throw new IllegalArgumentException ();
+    public static void parseJsonFile(String newPath, String[][] csv, int width, int height) throws IOException, NullPointerException {
+    	if(newPath == null) throw new NullPointerException ();
 		if(newPath.endsWith(".json") == false) newPath += ".json";
 		File f = new File(newPath);
 		if(f.exists()) {
