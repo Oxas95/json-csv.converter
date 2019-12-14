@@ -40,12 +40,12 @@ private File f;
 		JsonManager json = new JsonManager (null);
 			
 	}
-	// Test avec n'est pas un csv
+	// Test avec n'est pas un json
 		@Test(expected=IllegalArgumentException.class)
 		public void TestConstructeur_FichierNonJSON_JSON() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 			File t;
-			t = new File("CsvTest2.txt");
-			JsonManager csv = new JsonManager ("CsvTest2.txt");
+			t = new File("JsonTest2.txt");
+			JsonManager csv = new JsonManager ("JsonTest2.txt");
 			t.deleteOnExit();
 				
 		}
@@ -110,6 +110,46 @@ private File f;
 		System.out.println("Width :"+ json.getWidth()+ "  and Height:"+ json.getHeight());
 
 	}
+	// Test si le constructeur fonctionne avec un fichier avec une erreur
+		@Test(expected=JSONException.class)
+		public void TestConstructeur_Fichiererreur_JSON() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
+
+			OutputStreamWriter fw;
+			 fw = new OutputStreamWriter(new FileOutputStream(f));
+			    fw.write("{\n" + 
+			    		"    \"test\": {\"id\": \"file\"},\n" + 
+			    		"    \"menu\": {\n" + 
+			    		"        \"popup\"\": {\"menuitem\": [\n" + 
+			    		"            [\n" + 
+			    		"                [1,2,3],\n" + 
+			    		"                [1,2],\n" + 
+			    		"                3\n" + 
+			    		"            ],\n" + 
+			    		"            {\n" + 
+			    		"                \"onclick\": [\n" + 
+			    		"                    \"CreateNewDoc()\",\n" + 
+			    		"                    \"OpenDoc()\",\n" + 
+			    		"                    \"CloseDoc()\"\n" + 
+			    		"                ],\n" + 
+			    		"                \"value\": [\n" + 
+			    		"                    \"New\",\n" + 
+			    		"                    \"New\",\n" + 
+			    		"                    \"Close\"\n" + 
+			    		"                ]\n" + 
+			    		"            }\n" + 
+			    		"        ]},\n" + 
+			    		"        \"id\": \"file\",\n" + 
+			    		"        \"value\": \"File\"\n" + 
+			    		"    }\n" + 
+			    		"}");
+			  fw.close();
+			
+			  JsonManager json = new JsonManager ("JsonTest.json");
+			 
+			System.out.print("Test2:\n");
+			System.out.println("Width :"+ json.getWidth()+ "  and Height:"+ json.getHeight());
+
+		}
 	
 	public void TestgetCSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		
@@ -243,7 +283,51 @@ private File f;
 
 	}
 	@Test
-	public void Testset_exceptionCaseInexistanteCSV() throws IOException,ArrayIndexOutOfBoundsException, NullPointerException, IllegalArgumentException, CsvException {
+	public void TestgetJSON() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
+		
+		OutputStreamWriter fw;
+		 fw = new OutputStreamWriter(new FileOutputStream(f));
+		 fw.write("{\n" + 
+		    		"    \"test\": {\"id\": \"file\"},\n" + 
+		    		"    \"menu\": {\n" + 
+		    		"        \"popup\": {\"menuitem\": [\n" + 
+		    		"            [\n" + 
+		    		"                [1,2,3],\n" + 
+		    		"                [1,2],\n" + 
+		    		"                3\n" + 
+		    		"            ],\n" + 
+		    		"            {\n" + 
+		    		"                \"onclick\": [\n" + 
+		    		"                    \"CreateNewDoc()\",\n" + 
+		    		"                    \"OpenDoc()\",\n" + 
+		    		"                    \"CloseDoc()\"\n" + 
+		    		"                ],\n" + 
+		    		"                \"value\": [\n" + 
+		    		"                    \"New\",\n" + 
+		    		"                    \"New\",\n" + 
+		    		"                    \"Close\"\n" + 
+		    		"                ]\n" + 
+		    		"            }\n" + 
+		    		"        ]},\n" + 
+		    		"        \"id\": \"file\",\n" + 
+		    		"        \"value\": \"File\"\n" + 
+		    		"    }\n" + 
+		    		"}");
+		  fw.close();
+		
+		JsonManager json = new JsonManager ("JsonTest.json");
+		
+		
+		System.out.print("Test get:\n");
+		System.out.println("Width :"+ json.getWidth()+ "  and Height:"+ json.getHeight());
+		System.out.println("String:"+ json.get(1,1));
+		
+		assertTrue(json.get(1,1).equalsIgnoreCase("1"));
+		
+
+	}
+	@Test
+	public void Testset_exceptionCaseInexistanteJSON() throws IOException,ArrayIndexOutOfBoundsException, NullPointerException, IllegalArgumentException, CsvException {
 		
 		OutputStreamWriter fw;
 		 fw = new OutputStreamWriter(new FileOutputStream(f));
@@ -419,7 +503,7 @@ private File f;
 			{
 				for(j=0;j<json.getHeight();j++)
 				{
-					System.out.println("csv1:"+ json.get(i,j)+"   csv2:"+ json.get(i,j));
+					
 					if(json.get(i,j).equalsIgnoreCase(jsont.get(i, j))==false)
 					{
 						fail();
@@ -468,12 +552,12 @@ private File f;
 			    		"    }\n" + 
 			    		"}");
 			  fw.close();
-			File testcsv =new File("testcsv.csv");
+			File testcsv2 =new File("testcsv2.csv");
 			
 			
 			JsonManager js = new JsonManager ("JsonTest.json");
-			CsvManager.parseCsvFile("testcsv.csv", js.getArrayCopy(), js.getWidth(), js.getHeight());
-			CsvManager csv = new CsvManager ("test3.csv");
+			CsvManager.parseCsvFile("testcsv2.csv", js.getArrayCopy(), js.getWidth(), js.getHeight());
+			CsvManager csv = new CsvManager ("testcsv2.csv");
 			
 			File jst =new File("Test.json");
 			JsonManager.parseJsonFile("Test.json", csv.getArrayCopy(), csv.getWidth(), csv.getHeight());
@@ -500,7 +584,7 @@ private File f;
 			
 			}
 			
-			testcsv.deleteOnExit();
+			testcsv2.deleteOnExit();
 			jst.deleteOnExit();
 			
 			
