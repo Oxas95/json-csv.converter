@@ -14,6 +14,10 @@ public enum App
 {
 	APPLICATION;
 	
+	public static void interact() {
+		
+	}
+	
 	/**
 	 * 
 	 * @param args not used

@@ -47,6 +47,7 @@ public class CsvManager {
         
         csv = new String[largeur][hauteur];
         
+        //verifier le nombre de valeurs dans les lignes (s'il y en a trop)
         
         int i,j;
         for(j = 1; j < hauteur; j++) {
@@ -101,13 +102,8 @@ public class CsvManager {
 	 * @param j which line
 	 * @return value in the array at row i, line j if possible. Else return null
 	 */
-	public String get(int i, int j) {
-		try {
-			return csv[i][j];	
-		}
-		catch(Exception e) {
-			return null;
-		}
+	public String get(int i, int j) throws IndexOutOfBoundsException {
+		return csv[i][j];
 	}
 	
 	/**
@@ -120,7 +116,7 @@ public class CsvManager {
         System.out.println(csv);
         try {
         	csv[i][j] = newString;
-        }catch (Exception e) {}
+        }catch (IndexOutOfBoundsException e) {}
 	}
 	
 	/**
