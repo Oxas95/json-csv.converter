@@ -4,7 +4,7 @@ public class Manager {
 	/**
 	 * separator between a key and his subKey
 	 */
-    public static final char separator = '/';
+    public static final String separator = "__";
 
 	/**
 	 * how many lines

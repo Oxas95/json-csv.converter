@@ -40,8 +40,6 @@ public class CsvManager extends Manager{
         
         this.data = new String[largeur][hauteur];
         
-        //verifier le nombre de valeurs dans les lignes (s'il y en a trop)
-        
         int i,j;
         for(j = 1; j < hauteur; j++) {
         	if(values.get(j-1).size() != largeur) throw new CsvException();

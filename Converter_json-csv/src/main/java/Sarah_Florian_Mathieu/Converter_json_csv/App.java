@@ -7,6 +7,7 @@ import java.util.Scanner;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.Converter;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.FileFormatException;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.TypeFile;
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.ConfigFileException;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvException;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvManager;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.JsonManager;
@@ -30,11 +31,12 @@ public enum App
 	 * @throws CsvException
 	 * @throws IllegalArgumentException
 	 * @throws NullPointerException
+	 * @throws ConfigFileException 
 	 */
-	public static void launchApp(String fic_in, String fic_out, TypeFile tf) throws FileFormatException, IOException, NullPointerException, IllegalArgumentException, CsvException {
+	public static void launchApp(String fic_in, String fic_out, TypeFile tf) throws FileFormatException, IOException, NullPointerException, IllegalArgumentException, CsvException, ConfigFileException {
 		Converter c = new Converter(fic_in);
 		
-		
+		c.configureData();
 		
 		c.saveAs(fic_out, tf);
 	}
@@ -46,8 +48,9 @@ public enum App
 	 * @throws CsvException
 	 * @throws IllegalArgumentException
 	 * @throws NullPointerException
+	 * @throws ConfigFileException 
 	 */
-	public static void interact() throws FileFormatException, IOException, NullPointerException, IllegalArgumentException, CsvException{
+	public static void interact() throws FileFormatException, IOException, NullPointerException, IllegalArgumentException, CsvException, ConfigFileException{
 		System.out.println("******CSV/JSON CONVERTER******");
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Veuillez saisir un fichier d'entrée :");
@@ -65,7 +68,7 @@ public enum App
 		TypeFile[] tf = {TypeFile.CSV,TypeFile.JSON};
 		System.out.println("Veuillez sélectionner le produit souhaité : \n1." + tf[0] + "\n2." + tf[1]);
 		int choix = -1;
-		while(choix < 0 && choix > tf.length - 1) {
+		while(choix < 0 || choix > tf.length - 1) {
 			try {
 				choix = scan.nextInt();
 			}catch(InputMismatchException e) {System.out.println("Entrée invalide");}
@@ -79,18 +82,17 @@ public enum App
 	 *
 	 * @param args not used
 	 * @throws IOException if problem to read a file used by the converter
+	 * @throws FileFormatException
 	 * @throws CsvException
 	 * @throws IllegalArgumentException
 	 * @throws NullPointerException
+	 * @throws ConfigFileException 
 	 */
-	public static void main( String[] args ) throws IOException, FileFormatException, NullPointerException, IllegalArgumentException, CsvException {
+	public static void main( String[] args ) throws IOException, FileFormatException, NullPointerException, IllegalArgumentException, CsvException, ConfigFileException {
 		//interact();
-		//exemple csv->json->csv->csv
-		CsvManager cm = new CsvManager("exemple.csv");
-		JsonManager.parseJsonFile("csv->json", cm.getArrayCopy(), cm.getWidth(), cm.getHeight());
-		JsonManager jm = new JsonManager("csv->json.json");
-		CsvManager.parseCsvFile("csv->json->csv", jm.getArrayCopy(), jm.getWidth(), jm.getHeight());
-		CsvManager cm2 = new CsvManager("csv->json->csv.csv");
-		CsvManager.parseCsvFile("csv->json->csv->csv", cm2.getArrayCopy(), cm2.getWidth(), cm2.getHeight());
+		JsonManager jm = new JsonManager("jsonTest2.json");
+		System.out.println(jm);
+		CsvManager.parseCsvFile("jsonTest3", jm.getArrayCopy(), jm.getWidth(), jm.getHeight());
+		JsonManager.parseJsonFile("jsonTest3", jm.getArrayCopy(), jm.getWidth(), jm.getHeight());
 	}
 }

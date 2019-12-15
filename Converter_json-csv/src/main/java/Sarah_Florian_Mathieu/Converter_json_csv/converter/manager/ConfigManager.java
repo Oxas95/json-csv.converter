@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-class ConfigManager extends Manager {
+public class ConfigManager extends Manager {
 	
 	public static final String configFileName = "Config.cfg";
 	
@@ -16,18 +16,18 @@ class ConfigManager extends Manager {
 	ArrayList <ArrayList <String>> values;
 	ArrayList <String> operations;
 	
-	ConfigManager(String [][] data, int width, int height) throws IOException{
+	public ConfigManager(String [][] data, int width, int height) throws ConfigFileException {
+		if(data == null) throw new ConfigFileException ();
 		this.data = data;
 		largeur = width;
 		hauteur = height;
-		generateConfigFile(data, width);
 	}
 	
-	private void generateConfigFile(String [][] data, int width) throws IOException {
+	public void generateConfigFile() throws IOException {
 		File f = new File("Config.cfg");
 		if(f.exists()) f.delete();
 		OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(configFileName));
-		for(int i = 0; i < width; i ++) {
+		for(int i = 0; i < largeur; i ++) {
 	        fw.write(data[i][0] + " = " + data[i][0] + '\n');
 		}
 		fw.close();
@@ -69,35 +69,45 @@ class ConfigManager extends Manager {
 		for(i = 0; i < tmp.length ; i++){
 			split.add(i, tmp[i]);
 		}
-
+		System.out.println(split);
 		return split;
 	}
 	
 	private void evaluate() { //calcul linéaire sans ordre de priorité sur les différents opérateurs
 		ArrayList<String> split;
 		ArrayList<String> res;
-		int j;
 		for(int i = 0; i < operations.size(); i++) {
 			split = splitOnOperator(operations.get(i));
 			res = getValues(split.get(0));
+			if(res == null) {
+				res = new ArrayList<String>();
+				res.add(split.get(0));
+			}
 			split.remove(0);
 			while(split.isEmpty() == false && split != null) {
 				try{
 					if(split.get(0).equalsIgnoreCase("+")) {
 						res = add(res,split.get(1));
 					}
-					if(split.get(0).equalsIgnoreCase("-")) {
+					else if(split.get(0).equalsIgnoreCase("-")) {
 						res = substract(res,split.get(1));
 					}
-					if(split.get(0).equalsIgnoreCase("*")) {
+					else if(split.get(0).equalsIgnoreCase("*")) {
 						res = multiply(res,split.get(1));
 					}
-					if(split.get(0).equalsIgnoreCase("/")) {
+					else if(split.get(0).equalsIgnoreCase("\\")) {
 						res = divide(res,split.get(1));
 					}
-					if(split.get(0).equalsIgnoreCase("|")) {
+					else if(split.get(0).equalsIgnoreCase("|")) {
 						res = concatenate(res,split.get(1));
 					}
+					else { //ConfigFileException qui ne peut etre capturé si l'operateur est invalide
+						split = null;
+						attributs.remove(i);
+						values.remove(i);
+						i--;
+					}
+					
 					split.remove(0);
 					split.remove(0);
 				}catch (ClassCastException | NumberFormatException | IndexOutOfBoundsException e) { //calcul impossible, suppression de l'attribut dans les données
@@ -230,13 +240,8 @@ class ConfigManager extends Manager {
 		Object o1, o2;
 		
 		if(vals != null) { //att_src existe
-			if(vals.size() > res.size()) {
-				tmp = res;
-				res = vals;
-				vals = tmp;
-			}
-			
-			for(int i = 0; i < vals.size(); i++) {
+			int min = (res.size() < vals.size())? res.size() : vals.size();
+			for(int i = 0; i < min; i++) {
 				o1 = JsonManager.cast(res.get(i));
 				o2 = JsonManager.cast(vals.get(i));
 				o1 = (double)o1 - (double)o2;
@@ -261,11 +266,6 @@ class ConfigManager extends Manager {
 		Object o1, o2;
 		
 		if(vals != null) { //att_src existe
-			if(vals.size() > res.size()) {
-				tmp = res;
-				res = vals;
-				vals = tmp;
-			}
 			int min = (res.size() < vals.size())? res.size() : vals.size();
 			for(int i = 0; i < min; i++) {
 				o1 = JsonManager.cast(res.get(i));

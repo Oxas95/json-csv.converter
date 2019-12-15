@@ -1,7 +1,10 @@
 package Sarah_Florian_Mathieu.Converter_json_csv.converter;
 
 import java.io.IOException;
+import java.util.Scanner;
 
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.ConfigFileException;
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.ConfigManager;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvException;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvManager;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.JsonManager;
@@ -40,6 +43,16 @@ public class Converter {
 				throw new FileFormatException();
 			}
 		}
+	}
+	
+	public void configureData() throws ConfigFileException, IOException {
+		ConfigManager cm = new ConfigManager(data, largeur, hauteur);
+		cm.generateConfigFile();
+		System.out.println("Ecrire \"continue\" pour valider les changements");
+		Scanner s = new Scanner(System.in);
+		while(s.nextLine().equalsIgnoreCase("continue"))
+		
+		cm.ProcessFile();
 	}
 	
 	public void saveAs(String name, TypeFile tf) throws IllegalArgumentException, IOException {

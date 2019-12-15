@@ -1,0 +1,4 @@
+menu__popup__menuitem__value,menu__value,menu__popup__menuitem__undefined0__undefined1,test__id,menu__popup__menuitem__undefined0__undefined0,menu__popup__menuitem__onclick,menu__id,menu__popup__menuitem__undefined0
+New,File,1,file,1,CreateNewDoc(),file,3
+New,,2,,2,OpenDoc(),,
+Close,,,,3,CloseDoc(),,

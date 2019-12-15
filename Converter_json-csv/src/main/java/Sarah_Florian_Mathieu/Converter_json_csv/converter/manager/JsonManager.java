@@ -133,27 +133,67 @@ public class JsonManager extends Manager{
     	}
     }
 
-	private static void parseTreeJson(String[][] csv, int width, int height) throws IOException {
-        String s = "", tj = "traitementJson";
-
-        File f = new File(tj);
-        if(f.exists()) f.delete();
-
-        OutputStreamWriter fw;
+	private static JSONObject parseJson(String[][] csv, int width, int height) {
+        String[] s;
         int i,j;
-
-        for(i = 0; i < width; i++){
-            s = tj + separator + csv[i][0];
-            f = new File(s);
-            f.mkdirs();
-            s += separator + "valeur.txt";
-            fw = new OutputStreamWriter(new FileOutputStream(s));
-            for(j = 1; j < height; j++){
-                fw.write(csv[i][j] + '\n');
+        
+        JSONObject jo = (JSONObject) parseJson2(csv[0][0].split(separator), 0, 0, height, csv);
+        Object tmp = jo, tmp2;
+        for(i = 1; i < width; i++){
+            s = csv[i][0].split(separator);
+            j = 0;
+            tmp = jo;
+            while(j < s.length) {
+	            try {
+	            	tmp2 = ((JSONObject) tmp).get(s[j]);
+	            	if(tmp2.getClass() == JSONObject.class) {
+	            		tmp = tmp2;
+	            		j++;
+	            		if(j == s.length) {
+	            			JSONArray ja = new JSONArray();
+		            		ja.put(tmp);
+		            		ja.put(parseJson2(s, j, i, height, csv));
+		            	}
+	            	}
+	            	
+	            	else {
+	            		if(tmp.getClass() == JSONArray.class) {
+	            			j++;
+	            			((JSONArray) tmp).put(parseJson2(s, j, i, height, csv));
+	            			j = s.length;
+	            		}
+	            		else {
+		            		j++;
+		            		JSONArray ja = new JSONArray();
+		            		ja.put(tmp2);
+		            		ja.put(parseJson2(s, j, i, height, csv));
+		            		j = s.length;
+	            		}
+	            	}
+	            }catch (JSONException e) {
+	            	((JSONObject) tmp).put(s[j], parseJson2(s, j + 1, i, height, csv));
+	            	j = s.length;
+	            }
             }
-            fw.close();
         }
+        return jo;
     }
+	
+	private static Object parseJson2(String[] s, int k, int i, int height, String[][] csv) {
+		if(k < s.length) {
+			JSONObject jo = new JSONObject();
+			jo.put(s[k], parseJson2(s, k + 1, i, height, csv));
+			return jo;
+		}
+		else {
+			JSONArray ja = new JSONArray();
+			for(int j = 1; j < height; j++) {
+				if(csv[i][j].isEmpty() == false) ja.put(JsonManager.cast(csv[i][j]));
+			}
+			if(ja.length() == 1) return ja.get(0);
+			else return ja;
+		}
+	}
 
     public static Object cast(String s) {
         try {
@@ -171,106 +211,6 @@ public class JsonManager extends Manager{
         }
     }
 
-    private static Object valeurTxt(File f) throws IOException {
-        ArrayList<Object> ls = new ArrayList <Object> ();
-        FileReader fr = new FileReader(f.toPath().toString());
-        String s;
-        int c = 0;
-        while(c != -1) {
-            s = "";
-            c = 0;
-            while(c != -1 && c != '\n') {
-            	c = fr.read();
-                if(c != -1 && c != '\n') s += (char)c;
-            }
-            if(s.length() > 0) ls.add(cast(s));
-        }
-        fr.close();
-        if(ls.size() == 1) {
-        	f.delete();
-        	return ls.get(0);
-        }
-        else {
-            JSONArray ja = new JSONArray();
-            for(int i = 0; i < ls.size(); i ++) {
-                ja.put(ls.get(i));
-            }
-            f.delete();
-            return ja;
-        }
-    }
-    
-    private static Object getValeurTxt(File f) throws IOException {
-    	File[] sf = f.listFiles();
-    	if(sf != null) {
-    		for(int i = 0; i < sf.length; i++) {
-    			if(sf[i].getName().equalsIgnoreCase("valeur.txt")) {
-    				return valeurTxt(sf[i]);
-    			}
-    		}
-    	}
-		return null;
-    }
-    
-    private static Object subObject(File f) throws IOException {
-    	File[] sf = f.listFiles();
-    	int i;
-    	
-    	JSONObject jo = new JSONObject();
-    	Object obj;
-    	JSONArray ja;
-    	
-    	for(i = 0; i < sf.length; i++) {
-    		if(sf[i].getName().equalsIgnoreCase("valeur.txt") == false) {
-				obj = getValeurTxt(sf[i]);
-				Object o = subObject(sf[i]);
-				if(obj != null && o != null) {
-        			ja = new JSONArray();
-        			ja.put(obj);
-        			ja.put(o);
-        			jo.put(sf[i].getName(), ja);
-        		}
-				else if (obj != null && o == null) jo.put(sf[i].getName(), obj);
-    			
-				else if (o != null) jo.put(sf[i].getName(), o);
-				sf[i].delete();
-    		}
-		}
-    	f.delete();
-    	if(jo.isEmpty()) return null;
-    	return jo;
-    }
-    
-    private static JSONObject generateJsonObject() throws JSONException, IOException{
-        String tj = "traitementJson";
-        File f = new File(tj);
-        f.listFiles();
-        File[] sf = f.listFiles();
-        JSONObject jo = new JSONObject();
-        JSONArray ja;
-        Object obj;
-        int i;
-        
-		for(i = 0; i < sf.length; i++) {
-			if(sf[i].getName().equalsIgnoreCase("valeur.txt") == false) {
-				obj = getValeurTxt(sf[i]);
-				Object o = subObject(sf[i]);
-				if(obj != null && o != null) {
-        			ja = new JSONArray();
-        			ja.put(obj);
-        			ja.put(o);
-        			jo.put(sf[i].getName(), ja);
-        		}
-				else if (obj != null && o == null) jo.put(sf[i].getName(), obj);
-    			
-				else if (o != null) jo.put(sf[i].getName(), o);
-				sf[i].delete();
-    		}
-		}
-		f.delete();
-		return jo;
-    }
-
     public static void parseJsonFile(String newPath, String[][] csv, int width, int height) throws IOException, NullPointerException {
     	if(newPath == null) throw new NullPointerException ();
 		if(newPath.endsWith(".json") == false) newPath += ".json";
@@ -279,8 +219,7 @@ public class JsonManager extends Manager{
 			System.err.println(newPath + " already exists, save undone.");
 			throw new IllegalArgumentException ();
 		}
-        parseTreeJson(csv,width,height);
-        JSONObject jo = generateJsonObject();
+        JSONObject jo = parseJson(csv,width,height);
         OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(newPath));
         fw.write(jo.toString(4));
         fw.close();
