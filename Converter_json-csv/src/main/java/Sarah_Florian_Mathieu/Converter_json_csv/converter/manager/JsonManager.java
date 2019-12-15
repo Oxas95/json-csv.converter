@@ -155,7 +155,7 @@ public class JsonManager extends Manager{
         }
     }
 
-    private static Object cast(String s) {
+    public static Object cast(String s) {
         try {
             double d = Double.parseDouble(s);
             return d;
