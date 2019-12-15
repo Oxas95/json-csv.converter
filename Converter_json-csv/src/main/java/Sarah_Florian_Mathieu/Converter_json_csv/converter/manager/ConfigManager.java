@@ -58,10 +58,18 @@ class ConfigManager extends Manager {
 			}
 		}
 	}
-	
-	private ArrayList<String> splitOnOperator(String s){
-		ArrayList<String> split = new ArrayList<String> ();
-		
+
+	private static ArrayList<String> splitOnOperator(String s){
+		s = s.trim();
+		int i;
+		String[] tmp = null;
+		tmp = s.split("[\\+\\-\\*\\/\\|]");
+		ArrayList<String> split = new ArrayList<String> (tmp.length);
+
+		for(i = 0; i < tmp.length ; i++){
+			split.add(i, tmp[i]);
+		}
+
 		return split;
 	}
 	
