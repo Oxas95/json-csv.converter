@@ -1,8 +1,12 @@
 package Sarah_Florian_Mathieu.Converter_json_csv;
 
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.Converter;
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.FileFormatException;
+import Sarah_Florian_Mathieu.Converter_json_csv.converter.TypeFile;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvException;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvManager;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.JsonManager;
@@ -27,16 +31,12 @@ public enum App
 	 * @throws IllegalArgumentException
 	 * @throws NullPointerException
 	 */
-	public static void launchApp(String fic_in, String fic_out) throws FileFormatException, IOException, NullPointerException, IllegalArgumentException, CsvException {
-		if(fic_in.endsWith(".csv")){
-			CsvManager cm = new CsvManager(fic_in);
-			JsonManager.parseJsonFile(fic_out, cm.getArrayCopy(), cm.getWidth(), cm.getHeight());
-		}
-		else if(fic_in.endsWith(".json")){
-			JsonManager jm = new JsonManager(fic_in);
-			CsvManager.parseCsvFile(fic_out, jm.getArrayCopy(), jm.getWidth(), jm.getHeight());
-		}
-		else throw new FileFormatException();
+	public static void launchApp(String fic_in, String fic_out, TypeFile tf) throws FileFormatException, IOException, NullPointerException, IllegalArgumentException, CsvException {
+		Converter c = new Converter(fic_in);
+		
+		
+		
+		c.saveAs(fic_out, tf);
 	}
 
 	/**
@@ -62,7 +62,17 @@ public enum App
 		fic_out = scan.nextLine();
 		if (fic_out.isEmpty()) fic_out = fic_in;
 
-		launchApp(fic_in,fic_out);
+		TypeFile[] tf = {TypeFile.CSV,TypeFile.JSON};
+		System.out.println("Veuillez sélectionner le produit souhaité : \n1." + tf[0] + "\n2." + tf[1]);
+		int choix = -1;
+		while(choix < 0 && choix > tf.length - 1) {
+			try {
+				choix = scan.nextInt();
+			}catch(InputMismatchException e) {System.out.println("Entrée invalide");}
+		}
+		
+		launchApp(fic_in,fic_out, tf[choix - 1]);
+		scan.close();
 	}
 
 	/**

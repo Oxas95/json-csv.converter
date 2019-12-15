@@ -1,14 +1,10 @@
 package Sarah_Florian_Mathieu.Converter_json_csv.converter;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvException;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvManager;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.JsonManager;
-import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.TypeFile;
 
 public class Converter {
 
@@ -27,38 +23,23 @@ public class Converter {
 	 */
 	private String [][] data = null;
 	
-	public Converter(String toConvert) throws IOException, NullPointerException, IllegalArgumentException, CsvException{
-		if(toConvert == null)
-			throw new NullPointerException ();
+	public Converter(String toConvert) throws IOException, NullPointerException, IllegalArgumentException, CsvException, FileFormatException{
 		
-		else {
-			if(toConvert.endsWith(".csv")) {
-				CsvManager cm = new CsvManager(toConvert);
-				data = cm.getArrayCopy();
-				largeur = cm.getWidth();
-				hauteur = cm.getHeight();
-			}
-			else {
+		try{
+			CsvManager cm = new CsvManager(toConvert);
+			data = cm.getArrayCopy();
+			largeur = cm.getWidth();
+			hauteur = cm.getHeight();
+		}catch(IllegalArgumentException e){
+			try{
 				JsonManager jm = new JsonManager(toConvert);
 				data = jm.getArrayCopy();
 				largeur = jm.getWidth();
 				hauteur = jm.getHeight();
+			}catch(IllegalArgumentException e1) {
+				throw new FileFormatException();
 			}
 		}
-	}
-	
-	public void generateConfigFile() throws IOException {
-		File f = new File("Config.cfg");
-		if(f.exists()) f.delete();
-		OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream("Config.cfg"));
-		for(int i = 0; i < largeur; i ++) {
-	        fw.write(data[i][0] + " = " + data[i][0] + '\n');
-		}
-		fw.close();
-	}
-	
-	public void ParseConfigFileToData() {
-		
 	}
 	
 	public void saveAs(String name, TypeFile tf) throws IllegalArgumentException, IOException {
