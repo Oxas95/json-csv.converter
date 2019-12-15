@@ -59,11 +59,11 @@ class ConfigManager extends Manager {
 		}
 	}
 
-	private static ArrayList<String> splitOnOperator(String s){
+	private ArrayList<String> splitOnOperator(String s){
 		s = s.trim();
 		int i;
 		String[] tmp = null;
-		tmp = s.split("[\\+\\-\\*\\/\\|]");
+		tmp = s.split("(?!^)\\b");
 		ArrayList<String> split = new ArrayList<String> (tmp.length);
 
 		for(i = 0; i < tmp.length ; i++){
