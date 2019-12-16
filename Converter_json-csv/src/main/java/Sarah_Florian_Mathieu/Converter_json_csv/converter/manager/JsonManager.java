@@ -3,7 +3,6 @@ package Sarah_Florian_Mathieu.Converter_json_csv.converter.manager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -132,7 +131,7 @@ public class JsonManager extends Manager{
     		data.put(key, values);
     	}
     }
-
+    
 	private static JSONObject parseJson(String[][] csv, int width, int height) {
         String[] s;
         int i,j;
@@ -147,31 +146,34 @@ public class JsonManager extends Manager{
 	            try {
 	            	tmp2 = ((JSONObject) tmp).get(s[j]);
 	            	if(tmp2.getClass() == JSONObject.class) {
-	            		tmp = tmp2;
-	            		j++;
-	            		if(j == s.length) {
-	            			JSONArray ja = new JSONArray();
-		            		ja.put(tmp);
-		            		ja.put(parseJson2(s, j, i, height, csv));
+	            		if(j == s.length - 1) { //toutes les clés existent déjà
+	            			Object o = parseJson2(s, j + 1, i, height, csv);
+		            		((JSONObject) tmp).accumulate(s[j], o);
+		            		j = s.length;
+		            	}
+	            		else { //aller au sous JSONObject
+		            		tmp = tmp2;
+		            		j++;
 		            	}
 	            	}
 	            	
-	            	else {
-	            		if(tmp.getClass() == JSONArray.class) {
+	            	else { //contient un tableau
+	            		if(tmp2.getClass() == JSONArray.class) {
 	            			j++;
-	            			((JSONArray) tmp).put(parseJson2(s, j, i, height, csv));
+	            			Object o = parseJson2(s, j, i, height, csv);
+	            			((JSONArray) tmp2).put(o);
 	            			j = s.length;
 	            		}
-	            		else {
+	            		else { //contient une simple valeur
 		            		j++;
-		            		JSONArray ja = new JSONArray();
-		            		ja.put(tmp2);
-		            		ja.put(parseJson2(s, j, i, height, csv));
+		            		Object o = parseJson2(s, j, i, height, csv);
+		            		((JSONObject) tmp).accumulate(s[j], o);
 		            		j = s.length;
 	            		}
 	            	}
-	            }catch (JSONException e) {
-	            	((JSONObject) tmp).put(s[j], parseJson2(s, j + 1, i, height, csv));
+	            }catch (JSONException e) { //aucune valeur pour la clé
+	            	Object o = parseJson2(s, j + 1, i, height, csv);
+	            	((JSONObject) tmp).put(s[j], o);
 	            	j = s.length;
 	            }
             }
@@ -185,25 +187,27 @@ public class JsonManager extends Manager{
 			jo.put(s[k], parseJson2(s, k + 1, i, height, csv));
 			return jo;
 		}
-		else {
+		else { //création du tableau pour stocker les valeurs
 			JSONArray ja = new JSONArray();
 			for(int j = 1; j < height; j++) {
 				if(csv[i][j].isEmpty() == false) ja.put(JsonManager.cast(csv[i][j]));
 			}
-			if(ja.length() == 1) return ja.get(0);
+			if(ja.length() == 1) { //s'il n'y a qu'une seule valeur
+				return ja.get(0);
+			}
 			else return ja;
 		}
 	}
 
     public static Object cast(String s) {
         try {
-            double d = Double.parseDouble(s);
-            return d;
+        	int i = Integer.parseInt(s);
+            return i;
         }
         catch(java.lang.NumberFormatException e) {
             try{
-                int i = Integer.parseInt(s);
-                return i;
+            	double d = Double.parseDouble(s);
+                return d;
             }
             catch(java.lang.NumberFormatException e2) {
                 return s;

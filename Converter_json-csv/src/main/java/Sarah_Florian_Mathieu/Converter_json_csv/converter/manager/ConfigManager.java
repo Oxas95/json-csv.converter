@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ConfigManager extends Manager {
@@ -13,7 +15,7 @@ public class ConfigManager extends Manager {
 	public static final String configFileName = "Config.cfg";
 	
 	ArrayList <String> attributs;
-	ArrayList <ArrayList <String>> values;
+	Map<String,ArrayList<String>> values;
 	ArrayList <String> operations;
 	
 	public ConfigManager(String [][] data, int width, int height) throws ConfigFileException {
@@ -46,14 +48,14 @@ public class ConfigManager extends Manager {
 	
 	private void splitData(ArrayList <String> cible, ArrayList <String> operations) throws FileNotFoundException, ConfigFileException {
 		ArrayList <String> line = fileToListString(configFileName);
-		values = new ArrayList <ArrayList <String>> ();
+		values = new HashMap<String,ArrayList<String>> ();
 		String[] tmp;
 		for(String currentLine : line) {
 			tmp = currentLine.split("=");
 			if(tmp.length != 2) throw new ConfigFileException();
 			else {
 				cible.add(tmp[0].trim());
-				values.add(setValues(tmp[0].trim()));
+				values.put(tmp[0].trim(),setValues(tmp[0].trim()));
 				operations.add(tmp[1].trim());
 			}
 		}
@@ -67,9 +69,8 @@ public class ConfigManager extends Manager {
 		ArrayList<String> split = new ArrayList<String> (tmp.length);
 
 		for(i = 0; i < tmp.length ; i++){
-			split.add(i, tmp[i]);
+			split.add(i, tmp[i].trim());
 		}
-		System.out.println(split);
 		return split;
 	}
 	
@@ -78,13 +79,17 @@ public class ConfigManager extends Manager {
 		ArrayList<String> res;
 		for(int i = 0; i < operations.size(); i++) {
 			split = splitOnOperator(operations.get(i));
+			//System.out.println("getValues of " + split.get(0) + " : " + getValues(split.get(0)));
 			res = getValues(split.get(0));
 			if(res == null) {
 				res = new ArrayList<String>();
 				res.add(split.get(0));
 			}
 			split.remove(0);
-			while(split.isEmpty() == false && split != null) {
+			boolean continuer = split != null;
+			if(continuer == true) continuer = continuer && split.isEmpty() == false;
+			while(continuer) {
+				//System.out.println(i + " : " + res);
 				try{
 					if(split.get(0).equalsIgnoreCase("+")) {
 						res = add(res,split.get(1));
@@ -102,28 +107,33 @@ public class ConfigManager extends Manager {
 						res = concatenate(res,split.get(1));
 					}
 					else { //ConfigFileException qui ne peut etre capturé si l'operateur est invalide
+						System.out.println("fail");
 						split = null;
-						attributs.remove(i);
-						values.remove(i);
+						if(removeAttribut(attributs.get(i))) ;
+						operations.remove(i);
 						i--;
 					}
 					
-					split.remove(0);
-					split.remove(0);
+					if(split != null) {
+						split.remove(0);
+						split.remove(0);
+					}
 				}catch (ClassCastException | NumberFormatException | IndexOutOfBoundsException e) { //calcul impossible, suppression de l'attribut dans les données
+					System.out.println("fail");
 					split = null;
-					attributs.remove(i);
-					values.remove(i);
+					removeAttribut(attributs.get(i));
+					operations.remove(i);
 					i--;
+					//e.printStackTrace();
+					
 				}
+				continuer = split != null;
+				if(continuer == true) continuer = continuer && split.isEmpty() == false;
 			}
 			
 			if(split != null) {
-				String s = attributs.get(i);
-				attributs.remove(i);
-				values.remove(i);
-				attributs.add(s);
-				values.add(res);
+				values.put(attributs.get(i), res);
+				//System.out.println("final " + res);
 			}
 		}
 	}
@@ -131,7 +141,7 @@ public class ConfigManager extends Manager {
 	private void updateData() {
 		largeur = attributs.size();
 		int max = 0;
-		for(int i = 0; i < values.size(); i++) max = ((max > values.get(i).size() + 1)? max : values.get(i).size() + 1);
+		for(int i = 0; i < attributs.size(); i++) max = ((max > values.get(attributs.get(i)).size() + 1)? max : values.get(attributs.get(i)).size() + 1);
 		hauteur = max;
 		data = new String[largeur][hauteur];
 		for(int i = 0; i < attributs.size(); i++) {
@@ -140,7 +150,7 @@ public class ConfigManager extends Manager {
 		int j;
 		for(int i = 0; i < attributs.size(); i++) {
 			j = 1;
-			for(String s : values.get(i)) {
+			for(String s : values.get(attributs.get(i))) {
 				data[i][j] = s;
 				j++;
 			}
@@ -156,12 +166,18 @@ public class ConfigManager extends Manager {
 	}
 	
 	private ArrayList<String> getValues(String att_src){
+		return values.get(att_src);
+	}
+	
+	private boolean removeAttribut(String att_src) {
 		for(int i = 0; i < attributs.size(); i++) {
 			if(att_src.equalsIgnoreCase(attributs.get(i))) {
-				return values.get(i);
+				attributs.remove(i);
+				values.remove(att_src);
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
 	
 	private ArrayList<String> setValues(String attribut){
@@ -218,16 +234,27 @@ public class ConfigManager extends Manager {
 			for(int i = 0; i < vals.size(); i++) {
 				o1 = JsonManager.cast(res.get(i));
 				o2 = JsonManager.cast(vals.get(i));
-				o1 = (double)o1 + (double)o2;
-				res.set(i, Double.toString((double) o1));
+				try {
+					o1 = (double)o1 + (double)o2;
+					res.set(i, Double.toString((double) o1));
+				}catch (ClassCastException e) {
+					o1 = (int)o1 + (int)o2;
+					res.set(i, Double.toString((int) o1));
+				}
+				
 			}
 		}
 		else { //att_src n'existe pas
 			for(int i = 0; i < res.size(); i++) {
 				o1 = JsonManager.cast(res.get(i));
 				o2 = JsonManager.cast(att_src);
-				o1 = (double)o1 + (double)o2;
-				res.set(i, Double.toString((double) o1));
+				try {
+					o1 = (double)o1 + (double)o2;
+					res.set(i, Double.toString((double) o1));
+				}catch (ClassCastException e) {
+					o1 = (int)o1 + (int)o2;
+					res.set(i, Double.toString((int) o1));
+				}
 			}
 		}
 		
@@ -236,7 +263,6 @@ public class ConfigManager extends Manager {
 	
 	private ArrayList<String> substract (ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
 		ArrayList<String> vals = getValues(att_src);
-		ArrayList<String> tmp;
 		Object o1, o2;
 		
 		if(vals != null) { //att_src existe
@@ -244,16 +270,26 @@ public class ConfigManager extends Manager {
 			for(int i = 0; i < min; i++) {
 				o1 = JsonManager.cast(res.get(i));
 				o2 = JsonManager.cast(vals.get(i));
-				o1 = (double)o1 - (double)o2;
-				res.set(i, Double.toString((double) o1));
+				try {
+					o1 = (double)o1 - (double)o2;
+					res.set(i, Double.toString((double) o1));
+				}catch (ClassCastException e) {
+					o1 = (int)o1 - (int)o2;
+					res.set(i, Double.toString((int) o1));
+				}
 			}
 		}
 		else { //att_src n'existe pas
 			for(int i = 0; i < res.size(); i++) {
 				o1 = JsonManager.cast(res.get(i));
 				o2 = JsonManager.cast(att_src);
-				o1 = (double)o1 - (double)o2;
-				res.set(i, Double.toString((double) o1));
+				try {
+					o1 = (double)o1 - (double)o2;
+					res.set(i, Double.toString((double) o1));
+				}catch (ClassCastException e) {
+					o1 = (int)o1 - (int)o2;
+					res.set(i, Double.toString((int) o1));
+				}
 			}
 		}
 		
@@ -262,7 +298,6 @@ public class ConfigManager extends Manager {
 	
 	private ArrayList<String> divide (ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
 		ArrayList<String> vals = getValues(att_src);
-		ArrayList<String> tmp;
 		Object o1, o2;
 		
 		if(vals != null) { //att_src existe
@@ -270,83 +305,69 @@ public class ConfigManager extends Manager {
 			for(int i = 0; i < min; i++) {
 				o1 = JsonManager.cast(res.get(i));
 				o2 = JsonManager.cast(vals.get(i));
-				o1 = (double)o1 / (double)o2;
-				res.set(i, Double.toString((double) o1));
+				try {
+					o1 = (double)o1 / (double)o2;
+					res.set(i, Double.toString((double) o1));
+				}catch (ClassCastException e) {
+					o1 = (int)o1 / (int)o2;
+					res.set(i, Double.toString((int) o1));
+				}
 			}
 		}
 		else { //att_src n'existe pas
 			for(int i = 0; i < res.size(); i++) {
 				o1 = JsonManager.cast(res.get(i));
 				o2 = JsonManager.cast(att_src);
-				o1 = (double)o1 / (double)o2;
-				res.set(i, Double.toString((double) o1));
+				try {
+					o1 = (double)o1 / (double)o2;
+					res.set(i, Double.toString((double) o1));
+				}catch (ClassCastException e) {
+					o1 = (int)o1 / (int)o2;
+					res.set(i, Double.toString((int) o1));
+				}
 			}
 		}
 		
 		return res;
 	}
 	
-	private ArrayList<String> multiply(ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
+	private ArrayList<String> multiply (ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
 		ArrayList<String> vals = getValues(att_src);
 		ArrayList<String> tmp;
 		Object o1, o2;
-		int i,j;
+		
 		if(vals != null) { //att_src existe
 			if(vals.size() > res.size()) {
 				tmp = res;
 				res = vals;
 				vals = tmp;
 			}
-			for(i = 0; i < vals.size(); i++) {
+			for(int i = 0; i < vals.size(); i++) {
 				o1 = JsonManager.cast(res.get(i));
 				o2 = JsonManager.cast(vals.get(i));
-				try{
+				try {
 					o1 = (double)o1 * (double)o2;
 					res.set(i, Double.toString((double) o1));
-				}catch(ClassCastException e) {//multiplier String par un nombre
-					String res2 = "";
-					if(o2.getClass() == String.class && o1.getClass() == String.class) throw new NumberFormatException ();
-					else if(o2.getClass() == String.class) {
-						for(j = 0; j < (double) o1; j++) {
-							res2 += (String) o2;
-						}
-						res.set(i, res2);
-					}
-					else {
-						for(j = 0; j < (double) o2; j++) {
-							res2 += (String) o1;
-						}
-						res.set(i, res2);
-					}
+				}catch (ClassCastException e) {
+					o1 = (int)o1 * (int)o2;
+					res.set(i, Double.toString((int) o1));
 				}
 			}
 		}
 		else { //att_src n'existe pas
-			for(i = 0; i < res.size(); i++) {
+			for(int i = 0; i < res.size(); i++) {
 				o1 = JsonManager.cast(res.get(i));
 				o2 = JsonManager.cast(att_src);
-				try{
+				try {
 					o1 = (double)o1 * (double)o2;
 					res.set(i, Double.toString((double) o1));
-				}catch(ClassCastException e) { //multiplier String par un nombre
-					if(o2.getClass() == String.class && o1.getClass() == String.class) throw new NumberFormatException ();
-					else if(o2.getClass() == String.class) {
-						String res2 = "";
-						for(j = 0; j < (double) o1; j++) {
-							res2 += (String) o2;
-						}
-						res.set(i, res2);
-					}
-					else {
-						String res2 = "";
-						for(j = 0; j < (double) o2; j++) {
-							res2 += (String) o1;
-						}
-						res.set(i, res2);
-					}
+				}catch (ClassCastException e) {
+					o1 = (int)o1 * (int)o2;
+					res.set(i, Double.toString((int) o1));
 				}
 			}
 		}
+		
 		return res;
 	}
 }

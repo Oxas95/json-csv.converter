@@ -26,8 +26,9 @@ public class Converter {
 	 */
 	private String [][] data = null;
 	
+	ConfigManager cm;
+	
 	public Converter(String toConvert) throws IOException, NullPointerException, IllegalArgumentException, CsvException, FileFormatException{
-		
 		try{
 			CsvManager cm = new CsvManager(toConvert);
 			data = cm.getArrayCopy();
@@ -46,16 +47,12 @@ public class Converter {
 	}
 	
 	public void configureData() throws ConfigFileException, IOException {
-		ConfigManager cm = new ConfigManager(data, largeur, hauteur);
+		cm = new ConfigManager(data, largeur, hauteur);
 		cm.generateConfigFile();
-		System.out.println("Ecrire \"continue\" pour valider les changements");
-		Scanner s = new Scanner(System.in);
-		while(s.nextLine().equalsIgnoreCase("continue"))
-		
-		cm.ProcessFile();
 	}
 	
-	public void saveAs(String name, TypeFile tf) throws IllegalArgumentException, IOException {
+	public void saveAs(String name, TypeFile tf) throws IllegalArgumentException, IOException, ConfigFileException {
+		cm.ProcessFile();
 		if(tf == TypeFile.CSV) {
 			CsvManager.parseCsvFile(name, data, largeur, hauteur);
 		}
