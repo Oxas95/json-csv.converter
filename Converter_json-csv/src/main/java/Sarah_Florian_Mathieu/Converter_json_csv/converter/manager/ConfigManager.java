@@ -281,7 +281,7 @@ public class ConfigManager extends Manager {
                 return d;
             }
             catch(java.lang.NumberFormatException e2) {
-            	if(s.isBlank()) return 0;
+            	if(s.trim().isEmpty()) return 0;
                 return s;
             }
         }
