@@ -12,19 +12,44 @@ import java.util.Scanner;
 
 public class ConfigManager extends Manager {
 	
+	/**
+	 * name of the configFile name
+	 */
 	public static final String configFileName = "Config.cfg";
 	
+	/**
+	 * contain the sets of keys during evaluation
+	 */
 	ArrayList <String> attributs;
+	
+	/**
+	 * contain lists of values associated to keys during evaluation 
+	 */
 	Map<String,ArrayList<String>> values;
+	
+	/**
+	 * contain operations of which attribute during evaluation
+	 */
 	ArrayList <String> operations;
 	
-	public ConfigManager(String [][] data, int width, int height) throws ConfigFileException {
-		if(data == null) throw new ConfigFileException ();
+	/**
+	 * copy pointer of data and dimensions
+	 * @param data is the table containing data to configure
+	 * @param width number of rows
+	 * @param height number of lines 
+	 * @throws NullPointerException if no data is given
+	 */
+	public ConfigManager(String [][] data, int width, int height) throws NullPointerException {
+		if(data == null) throw new NullPointerException ();
 		this.data = data;
 		largeur = width;
 		hauteur = height;
 	}
 	
+	/**
+	 * create and write the configFile
+	 * @throws IOException if problem to write in the file
+	 */
 	public void generateConfigFile() throws IOException {
 		File f = new File("Config.cfg");
 		if(f.exists()) f.delete();
@@ -36,6 +61,12 @@ public class ConfigManager extends Manager {
 		System.out.println("consultez le fichier " + f.getAbsolutePath() + " pour modifier les données");
 	}
 	
+	/**
+	 * create list of strings containing which line of the file
+	 * @param path is the path of the file to store in the list
+	 * @return the list containing which line of the file in elements of the file
+	 * @throws FileNotFoundException if file is not found
+	 */
 	public static ArrayList<String> fileToListString(String path) throws FileNotFoundException {
 		Scanner s = new Scanner(new File(path));
 		ArrayList <String> list = new ArrayList <String> ();
@@ -46,6 +77,13 @@ public class ConfigManager extends Manager {
     	return list;
 	}
 	
+	/**
+	 * separate keys storage and calculs
+	 * @param cible to store keys
+	 * @param operations to stores calculs of which keys
+	 * @throws FileNotFoundException if file is not found
+	 * @throws ConfigFileException if there is more than one '=' in a line 
+	 */
 	private void splitData(ArrayList <String> cible, ArrayList <String> operations) throws FileNotFoundException, ConfigFileException {
 		ArrayList <String> line = fileToListString(configFileName);
 		values = new HashMap<String,ArrayList<String>> ();
@@ -61,6 +99,11 @@ public class ConfigManager extends Manager {
 		}
 	}
 
+	/**
+	 * split which elements of the string and store it in a list
+	 * @param s string to split
+	 * @return the list containing which elements splited 
+	 */
 	private ArrayList<String> splitOnOperator(String s){
 		s = s.trim();
 		int i;
@@ -74,6 +117,10 @@ public class ConfigManager extends Manager {
 		return split;
 	}
 	
+	/**
+	 * calcul all operations and store the result and his key associated
+	 * a key is removed from the list of results if calcul is impossible
+	 */
 	private void evaluate() { //calcul linéaire sans ordre de priorité sur les différents opérateurs
 		ArrayList<String> split;
 		ArrayList<String> res;
@@ -136,6 +183,9 @@ public class ConfigManager extends Manager {
 		}
 	}
 	
+	/**
+	 * store the new data in the data table
+	 */
 	private void updateData() {
 		largeur = attributs.size();
 		int max = 0;
@@ -155,6 +205,11 @@ public class ConfigManager extends Manager {
 		}
 	}
 	
+	/**
+	 * read the configFile, evaluate all calculs and store all results in the table data
+	 * @throws FileNotFoundException
+	 * @throws ConfigFileException
+	 */
 	public void ProcessFile() throws FileNotFoundException, ConfigFileException {
 		attributs = new ArrayList <String> ();
 		operations = new ArrayList <String> ();
@@ -163,10 +218,22 @@ public class ConfigManager extends Manager {
 		updateData();
 	}
 	
+	/**
+	 * get values of a key
+	 * @param att_src is the key required to get values
+	 * @return return the list of values associated with the key given or null if values can't be given
+	 */
 	private ArrayList<String> getValues(String att_src){
-		return values.get(att_src);
+		if(att_src != null)
+			return values.get(att_src);
+		else return null;
 	}
 	
+	/**
+	 * remove the key and his values in the list of values and list of keys
+	 * @param att_src the key to remove and his values
+	 * @return if can remove
+	 */
 	private boolean removeAttribut(String att_src) {
 		for(int i = 0; i < attributs.size(); i++) {
 			if(att_src.equalsIgnoreCase(attributs.get(i))) {
@@ -178,6 +245,11 @@ public class ConfigManager extends Manager {
 		return false;
 	}
 	
+	/**
+	 * generate a list of values associated with a key in the data table
+	 * @param attribut the key wanted for storage of values in the list
+	 * @return the list containing values of the key
+	 */
 	private ArrayList<String> setValues(String attribut){
 		ArrayList<String> vals = null;
 		int j;
@@ -193,6 +265,11 @@ public class ConfigManager extends Manager {
 		return vals;
 	}
 	
+	/**
+	 * cast if possible a string in Integer or double, cast empty string by 0
+	 * @param s string to cast
+	 * @return the Object containing cast of the string
+	 */
 	public static Object cast(String s) {
         try {
         	int i = Integer.parseInt(s);
@@ -210,6 +287,12 @@ public class ConfigManager extends Manager {
         }
     }
 	
+	/**
+	 * set the concatenation between the res and att_src or values of att_src
+	 * @param res the current res
+	 * @param att_src the right operand to concatenate
+	 * @return the result of concatenation
+	 */
 	private ArrayList<String> concatenate (ArrayList<String> res, String att_src) {
 		ArrayList<String> vals = getValues(att_src);
 		ArrayList<String> tmp;
@@ -234,6 +317,14 @@ public class ConfigManager extends Manager {
 		return res;
 	}
 	
+	/**
+	 * add values of res with values of att_src or just by att_src
+	 * @param res the current result
+	 * @param att_src the right operand to add on res
+	 * @return the result of additions
+	 * @throws ClassCastException if a value of an operand is not a number
+	 * @throws NumberFormatException if a value of an operand is not a number
+	 */
 	private ArrayList<String> add (ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
 		ArrayList<String> vals = getValues(att_src);
 		ArrayList<String> tmp;
@@ -276,6 +367,14 @@ public class ConfigManager extends Manager {
 		return res;
 	}
 	
+	/**
+	 * substract values of res by values of att_src or just by att_src
+	 * @param res the current result
+	 * @param att_src the right operand to substract on res
+	 * @return the result of additions
+	 * @throws ClassCastException if a value of an operand is not a number
+	 * @throws NumberFormatException if a value of an operand is not a number
+	 */
 	private ArrayList<String> substract (ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
 		ArrayList<String> vals = getValues(att_src);
 		Object o1, o2;
@@ -311,6 +410,14 @@ public class ConfigManager extends Manager {
 		return res;
 	}
 	
+	/**
+	 * divide values of res by values of att_src or just by att_src
+	 * @param res the current result
+	 * @param att_src the right operand to divide res
+	 * @return the result of division
+	 * @throws ClassCastException if a value of an operand is not a number
+	 * @throws NumberFormatException if a value of an operand is not a number
+	 */
 	private ArrayList<String> divide (ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
 		ArrayList<String> vals = getValues(att_src);
 		Object o1, o2;
@@ -346,6 +453,14 @@ public class ConfigManager extends Manager {
 		return res;
 	}
 	
+	/**
+	 * multiply values of res by values of att_src or just by att_src
+	 * @param res the current result
+	 * @param att_src the right operand to multiply with values of res
+	 * @return the result of multiplication
+	 * @throws ClassCastException if a value of an operand is not a number
+	 * @throws NumberFormatException if a value of an operand is not a number
+	 */
 	private ArrayList<String> multiply (ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
 		ArrayList<String> vals = getValues(att_src);
 		ArrayList<String> tmp;

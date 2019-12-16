@@ -166,7 +166,7 @@ private File f2;
 		}
 		//save as csv from csv
 		@Test
-		public void TestsaveAs_Csv_Convert() throws IOException, NullPointerException, FileFormatException, IllegalArgumentException, CsvException{
+		public void TestsaveAs_Csv_Convert() throws IOException, NullPointerException, FileFormatException, IllegalArgumentException, CsvException, ConfigFileException{
 			File test_csv;
 			test_csv = new File("Test_save.csv");
 			TypeFile tf;
@@ -229,7 +229,7 @@ private File f2;
 		}
 		//save as json from csv
 		@Test
-		public void TestsaveAs_Csv_Json_Convert() throws IOException, NullPointerException, FileFormatException, IllegalArgumentException, CsvException{
+		public void TestsaveAs_Csv_Json_Convert() throws IOException, NullPointerException, FileFormatException, IllegalArgumentException, CsvException, ConfigFileException{
 			File test_json;
 			test_json = new File("Test_save.json");
 			TypeFile tf;
@@ -332,7 +332,7 @@ private File f2;
 		}
 		// Attention ici il devrai retourner une erreur
 		@Test
-		public void TestsaveAs_null_Convert() throws IOException, NullPointerException, FileFormatException, IllegalArgumentException, CsvException{
+		public void TestsaveAs_null_Convert() throws IOException, NullPointerException, FileFormatException, IllegalArgumentException, CsvException, ConfigFileException{
 			File test_json;
 			test_json = new File("Test_save.json");
 			

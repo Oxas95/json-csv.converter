@@ -1,5 +1,10 @@
 package Sarah_Florian_Mathieu.Converter_json_csv.converter;
 
+/**
+ * Exception for invalid format of file
+ * @author 
+ *
+ */
 @SuppressWarnings("serial")
 public class FileFormatException extends Exception{
     public FileFormatException(){

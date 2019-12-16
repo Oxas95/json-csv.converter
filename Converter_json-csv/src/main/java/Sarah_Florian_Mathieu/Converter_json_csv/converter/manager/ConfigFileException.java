@@ -1,5 +1,10 @@
 package Sarah_Florian_Mathieu.Converter_json_csv.converter.manager;
 
+/**
+ * Exception for ConfigManager
+ * @author 
+ *
+ */
 @SuppressWarnings("serial")
 public class ConfigFileException extends Exception{
 	public ConfigFileException() {

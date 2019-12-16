@@ -17,6 +17,12 @@ import org.json.JSONObject;
 
 public class JsonManager extends Manager{
     
+	/**
+	 * store the contents in a string
+	 * @param path of file to convert
+	 * @return file in a string
+	 * @throws FileNotFoundException if file don't exists
+	 */
 	public static String fileToString(String path) throws FileNotFoundException {
 		Scanner s = new Scanner(new File(path));
 		String file = "";
@@ -27,6 +33,12 @@ public class JsonManager extends Manager{
     	return file;
 	}
 	
+	/**
+	 * read a json file 
+	 * @param existingFile is the file to read
+	 * @throws FileNotFoundException if file don't exists
+	 * @throws NullPointerException if path given is null
+	 */
     @SuppressWarnings("unchecked")
 	public JsonManager(String existingFile) throws FileNotFoundException, NullPointerException {
     	if(existingFile != null) {
@@ -71,6 +83,12 @@ public class JsonManager extends Manager{
         }
     }
 
+    /**
+     * convert json in a list
+     * @param jo is the root JSONObject
+     * @param path equals to concatenation of keys and subKeys
+     * @param data the list that store keys and associated values
+     */
     private void parseJsonList(JSONObject jo, String path, Map<String, Object> data) { 
     	Object o;
     	String subPath;
@@ -86,7 +104,13 @@ public class JsonManager extends Manager{
     		}
     	}
     }
-
+    
+    /**
+     * call to store a value in the list according to the path containing keys depending to the type of the value
+     * @param path containing keys
+     * @param o contain the value to store
+     * @param data the list that store keys and associated values
+     */
     private void addValues(String path, Object o, Map<String, Object> data) {  
     	if(o.getClass() != JSONArray.class) { //une valeur quelconque
     		addToList(o, path, data);
@@ -115,6 +139,12 @@ public class JsonManager extends Manager{
 		}
 	}
     
+    /**
+     * store the value and its keys
+     * @param o value to store
+     * @param path contain keys associated to the value
+     * @param data the list that store keys and associated values
+     */
     @SuppressWarnings("unchecked")
 	private void addToList(Object o, String path, Map<String, Object> data) {
     	String key = path.substring(("traitementJson" + separator).length(),path.length());
@@ -132,6 +162,13 @@ public class JsonManager extends Manager{
     	}
     }
     
+    /**
+     * generate a json from an equivalent data table in csv format
+     * @param csv contain the data to convert
+     * @param width number of rows
+     * @param height bumber of lines
+     * @return the converted data table in json format
+     */
 	private static JSONObject parseJson(String[][] csv, int width, int height) {
         String[] s;
         int i,j;
@@ -181,6 +218,15 @@ public class JsonManager extends Manager{
         return jo;
     }
 	
+	/**
+	 * used in parseJson() to construct the jsonObject with recursivity
+	 * @param s sets of keys and subKeys separated
+	 * @param k which key in s[] to use
+	 * @param i indicate the row
+	 * @param height indicate the height of the table containing data
+	 * @param csv the table that contain data
+	 * @return the sub json object created according to the keys and the data associated to the keys
+	 */
 	private static Object parseJson2(String[] s, int k, int i, int height, String[][] csv) {
 		if(k < s.length) {
 			JSONObject jo = new JSONObject();
@@ -199,6 +245,11 @@ public class JsonManager extends Manager{
 		}
 	}
 
+	/**
+	 * cast a string in number if possible
+	 * @param s string to cast
+	 * @return in Object type the cast of param s
+	 */
     public static Object cast(String s) {
         try {
         	int i = Integer.parseInt(s);
@@ -215,6 +266,15 @@ public class JsonManager extends Manager{
         }
     }
 
+    /**
+     * convert in json a data table in csv format 
+     * @param newPath name of new file in which to store the conversion
+     * @param csv the data table in csv format
+     * @param width number of rows
+     * @param height number of lines
+     * @throws IOException if problem to write in the file or if the file already exists
+     * @throws NullPointerException if param newPath is null
+     */
     public static void parseJsonFile(String newPath, String[][] csv, int width, int height) throws IOException, NullPointerException {
     	if(newPath == null) throw new NullPointerException ();
 		if(newPath.endsWith(".json") == false) newPath += ".json";

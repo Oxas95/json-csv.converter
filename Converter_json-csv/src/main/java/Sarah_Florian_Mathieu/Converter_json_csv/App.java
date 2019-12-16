@@ -9,8 +9,6 @@ import Sarah_Florian_Mathieu.Converter_json_csv.converter.FileFormatException;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.TypeFile;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.ConfigFileException;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvException;
-import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvManager;
-import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.JsonManager;
 
 /**
  *
@@ -22,13 +20,13 @@ public enum App
 	APPLICATION;
 
 	/**
-	 * Method which asks an input file and a name for the output file and calls method launchApp()
-	 * @throws FileFormatException
-	 * @throws IOException
-	 * @throws CsvException
-	 * @throws IllegalArgumentException
-	 * @throws NullPointerException
-	 * @throws ConfigFileException 
+	 * Method which asks an input file and a name for the output file and run conversion
+	 * @throws FileFormatException if format of file is invalid
+	 * @throws IOException if problem to read or write a file during conversion
+	 * @throws CsvException if problem to read a csv file
+	 * @throws IllegalArgumentException if invalid argument is given for conversion
+	 * @throws NullPointerException if null is given for a path
+	 * @throws ConfigFileException if problem to configure data
 	 */
 	public static void interact() throws FileFormatException, IOException, NullPointerException, IllegalArgumentException, CsvException, ConfigFileException{
 		System.out.println("******CSV/JSON CONVERTER******");
@@ -65,14 +63,14 @@ public enum App
 	}
 
 	/**
-	 *
+	 * run the converter
 	 * @param args not used
-	 * @throws IOException if problem to read a file used by the converter
-	 * @throws FileFormatException
-	 * @throws CsvException
-	 * @throws IllegalArgumentException
-	 * @throws NullPointerException
-	 * @throws ConfigFileException 
+	 * @throws FileFormatException if format of file is invalid
+	 * @throws IOException if problem to read or write a file during conversion
+	 * @throws CsvException if problem to read a csv file
+	 * @throws IllegalArgumentException if invalid argument is given for conversion
+	 * @throws NullPointerException if null is given for a path
+	 * @throws ConfigFileException if problem to configure data
 	 */
 	public static void main( String[] args ) throws IOException, FileFormatException, NullPointerException, IllegalArgumentException, CsvException, ConfigFileException {
 		interact();

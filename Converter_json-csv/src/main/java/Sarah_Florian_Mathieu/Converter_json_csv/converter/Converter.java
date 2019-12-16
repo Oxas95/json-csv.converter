@@ -26,8 +26,20 @@ public class Converter {
 	 */
 	private String [][] data = null;
 	
+	/**
+	 * store the configManager used in multiple methods for this converter
+	 */
 	ConfigManager cm;
 	
+	/**
+	 * 
+	 * @param toConvert name of file to convert
+	 * @throws IOException if problem occur in CsvManager or JsonManager
+	 * @throws NullPointerException if toConvert param is null;
+	 * @throws IllegalArgumentException if name of file is invalid
+	 * @throws CsvException if problem to read a csv file
+	 * @throws FileFormatException if format of file is invalid
+	 */
 	public Converter(String toConvert) throws IOException, NullPointerException, IllegalArgumentException, CsvException, FileFormatException{
 		try{
 			CsvManager cm = new CsvManager(toConvert);
@@ -46,12 +58,26 @@ public class Converter {
 		}
 	}
 	
+	/**
+	 * Initialize ConfigManager and generate configFile for modifications 
+	 * @throws ConfigFileException if can't configure
+	 * @throws IOException if problem to write the configFile
+	 */
 	public void configureData() throws ConfigFileException, IOException {
 		cm = new ConfigManager(data, largeur, hauteur);
 		cm.generateConfigFile();
 	}
 	
-	public void saveAs(String name, TypeFile tf) throws IllegalArgumentException, IOException, ConfigFileException {
+	/**
+	 * save changes in a new file with the desired format 
+	 * @param name name of the new file 
+	 * @param tf the desired format of file
+	 * @throws IllegalArgumentException if name is invalid
+	 * @throws IOException if problem to save the new file
+	 * @throws ConfigFileException if configFile contain invalid data
+	 * @throws NullPointerException if name is null
+	 */
+	public void saveAs(String name, TypeFile tf) throws IllegalArgumentException, IOException, ConfigFileException, NullPointerException {
 		cm.ProcessFile();
 		this.data = cm.getArrayCopy();
 		if(tf == TypeFile.CSV) {

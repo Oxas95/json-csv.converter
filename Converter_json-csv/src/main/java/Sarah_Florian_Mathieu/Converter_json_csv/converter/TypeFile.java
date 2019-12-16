@@ -1,5 +1,10 @@
 package Sarah_Florian_Mathieu.Converter_json_csv.converter;
 
+/**
+ * enumeration of possible format for conversion
+ * @author 
+ *
+ */
 public enum TypeFile {
 	JSON("json"),
 	CSV("csv");
@@ -7,6 +12,7 @@ public enum TypeFile {
 	String type;
 	
 	TypeFile(String type){
+		if(type == null) throw new IllegalArgumentException();
 		this.type = type;
 	}
 	
