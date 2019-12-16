@@ -70,8 +70,7 @@ public class Manager {
 	 * @param j which line
 	 */
 	public void set(String newString, int i, int j) {
-        System.out.println(data);
-        try {
+		try {
         	data[i][j] = newString;
         }catch (Exception e) {}
 	}
