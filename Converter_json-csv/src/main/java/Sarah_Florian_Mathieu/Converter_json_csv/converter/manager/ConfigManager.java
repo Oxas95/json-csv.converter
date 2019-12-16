@@ -79,7 +79,6 @@ public class ConfigManager extends Manager {
 		ArrayList<String> res;
 		for(int i = 0; i < operations.size(); i++) {
 			split = splitOnOperator(operations.get(i));
-			//System.out.println("getValues of " + split.get(0) + " : " + getValues(split.get(0)));
 			res = getValues(split.get(0));
 			if(res == null) {
 				res = new ArrayList<String>();
@@ -89,25 +88,24 @@ public class ConfigManager extends Manager {
 			boolean continuer = split != null;
 			if(continuer == true) continuer = continuer && split.isEmpty() == false;
 			while(continuer) {
-				//System.out.println(i + " : " + res);
 				try{
-					if(split.get(0).equalsIgnoreCase("+")) {
-						res = add(res,split.get(1));
-					}
-					else if(split.get(0).equalsIgnoreCase("-")) {
-						res = substract(res,split.get(1));
-					}
-					else if(split.get(0).equalsIgnoreCase("*")) {
-						res = multiply(res,split.get(1));
-					}
-					else if(split.get(0).equalsIgnoreCase("\\")) {
+					if(split.get(0).charAt(0) == '/') {
 						res = divide(res,split.get(1));
 					}
-					else if(split.get(0).equalsIgnoreCase("|")) {
+					else if(split.get(0).charAt(0) == '-') {
+						res = substract(res,split.get(1));
+					}
+					else if(split.get(0).charAt(0) == '*') {
+						res = multiply(res,split.get(1));
+					}
+					else if(split.get(0).charAt(0) == '+') {
+						res = add(res,split.get(1));
+					}
+					else if(split.get(0).charAt(0) == '|') {
 						res = concatenate(res,split.get(1));
 					}
 					else { //ConfigFileException qui ne peut etre capturé si l'operateur est invalide
-						System.out.println("fail");
+						System.out.println("fail invalid operator : " + split.get(0));
 						split = null;
 						if(removeAttribut(attributs.get(i))) ;
 						operations.remove(i);
@@ -119,12 +117,12 @@ public class ConfigManager extends Manager {
 						split.remove(0);
 					}
 				}catch (ClassCastException | NumberFormatException | IndexOutOfBoundsException e) { //calcul impossible, suppression de l'attribut dans les données
-					System.out.println("fail");
+					System.out.println("fail, unable to calcul");
 					split = null;
 					removeAttribut(attributs.get(i));
 					operations.remove(i);
 					i--;
-					//e.printStackTrace();
+					e.printStackTrace();
 					
 				}
 				continuer = split != null;
@@ -143,15 +141,15 @@ public class ConfigManager extends Manager {
 		int max = 0;
 		for(int i = 0; i < attributs.size(); i++) max = ((max > values.get(attributs.get(i)).size() + 1)? max : values.get(attributs.get(i)).size() + 1);
 		hauteur = max;
-		data = new String[largeur][hauteur];
+		this.data = new String[largeur][hauteur];
 		for(int i = 0; i < attributs.size(); i++) {
-			data[i][0] = attributs.get(i);
+			this.data[i][0] = attributs.get(i);
 		}
 		int j;
 		for(int i = 0; i < attributs.size(); i++) {
 			j = 1;
 			for(String s : values.get(attributs.get(i))) {
-				data[i][j] = s;
+				this.data[i][j] = s;
 				j++;
 			}
 		}
@@ -195,6 +193,23 @@ public class ConfigManager extends Manager {
 		return vals;
 	}
 	
+	public static Object cast(String s) {
+        try {
+        	int i = Integer.parseInt(s);
+            return i;
+        }
+        catch(java.lang.NumberFormatException e) {
+            try{
+            	double d = Double.parseDouble(s);
+                return d;
+            }
+            catch(java.lang.NumberFormatException e2) {
+            	if(s.isBlank()) return 0;
+                return s;
+            }
+        }
+    }
+	
 	private ArrayList<String> concatenate (ArrayList<String> res, String att_src) {
 		ArrayList<String> vals = getValues(att_src);
 		ArrayList<String> tmp;
@@ -232,28 +247,28 @@ public class ConfigManager extends Manager {
 			}
 			
 			for(int i = 0; i < vals.size(); i++) {
-				o1 = JsonManager.cast(res.get(i));
-				o2 = JsonManager.cast(vals.get(i));
+				o1 = ConfigManager.cast(res.get(i));
+				o2 = ConfigManager.cast(vals.get(i));
 				try {
 					o1 = (double)o1 + (double)o2;
 					res.set(i, Double.toString((double) o1));
 				}catch (ClassCastException e) {
 					o1 = (int)o1 + (int)o2;
-					res.set(i, Double.toString((int) o1));
+					res.set(i, Integer.toString((int) o1));
 				}
 				
 			}
 		}
 		else { //att_src n'existe pas
 			for(int i = 0; i < res.size(); i++) {
-				o1 = JsonManager.cast(res.get(i));
-				o2 = JsonManager.cast(att_src);
+				o1 = ConfigManager.cast(res.get(i));
+				o2 = ConfigManager.cast(att_src);
 				try {
 					o1 = (double)o1 + (double)o2;
 					res.set(i, Double.toString((double) o1));
 				}catch (ClassCastException e) {
 					o1 = (int)o1 + (int)o2;
-					res.set(i, Double.toString((int) o1));
+					res.set(i, Integer.toString((int) o1));
 				}
 			}
 		}
@@ -268,27 +283,27 @@ public class ConfigManager extends Manager {
 		if(vals != null) { //att_src existe
 			int min = (res.size() < vals.size())? res.size() : vals.size();
 			for(int i = 0; i < min; i++) {
-				o1 = JsonManager.cast(res.get(i));
-				o2 = JsonManager.cast(vals.get(i));
+				o1 = ConfigManager.cast(res.get(i));
+				o2 = ConfigManager.cast(vals.get(i));
 				try {
 					o1 = (double)o1 - (double)o2;
 					res.set(i, Double.toString((double) o1));
 				}catch (ClassCastException e) {
 					o1 = (int)o1 - (int)o2;
-					res.set(i, Double.toString((int) o1));
+					res.set(i, Integer.toString((int) o1));
 				}
 			}
 		}
 		else { //att_src n'existe pas
 			for(int i = 0; i < res.size(); i++) {
-				o1 = JsonManager.cast(res.get(i));
-				o2 = JsonManager.cast(att_src);
+				o1 = ConfigManager.cast(res.get(i));
+				o2 = ConfigManager.cast(att_src);
 				try {
 					o1 = (double)o1 - (double)o2;
 					res.set(i, Double.toString((double) o1));
 				}catch (ClassCastException e) {
 					o1 = (int)o1 - (int)o2;
-					res.set(i, Double.toString((int) o1));
+					res.set(i, Integer.toString((int) o1));
 				}
 			}
 		}
@@ -303,27 +318,27 @@ public class ConfigManager extends Manager {
 		if(vals != null) { //att_src existe
 			int min = (res.size() < vals.size())? res.size() : vals.size();
 			for(int i = 0; i < min; i++) {
-				o1 = JsonManager.cast(res.get(i));
-				o2 = JsonManager.cast(vals.get(i));
+				o1 = ConfigManager.cast(res.get(i));
+				o2 = ConfigManager.cast(vals.get(i));
 				try {
 					o1 = (double)o1 / (double)o2;
 					res.set(i, Double.toString((double) o1));
 				}catch (ClassCastException e) {
 					o1 = (int)o1 / (int)o2;
-					res.set(i, Double.toString((int) o1));
+					res.set(i, Integer.toString((int) o1));
 				}
 			}
 		}
 		else { //att_src n'existe pas
 			for(int i = 0; i < res.size(); i++) {
-				o1 = JsonManager.cast(res.get(i));
-				o2 = JsonManager.cast(att_src);
+				o1 = ConfigManager.cast(res.get(i));
+				o2 = ConfigManager.cast(att_src);
 				try {
 					o1 = (double)o1 / (double)o2;
 					res.set(i, Double.toString((double) o1));
 				}catch (ClassCastException e) {
 					o1 = (int)o1 / (int)o2;
-					res.set(i, Double.toString((int) o1));
+					res.set(i, Integer.toString((int) o1));
 				}
 			}
 		}
@@ -343,27 +358,27 @@ public class ConfigManager extends Manager {
 				vals = tmp;
 			}
 			for(int i = 0; i < vals.size(); i++) {
-				o1 = JsonManager.cast(res.get(i));
-				o2 = JsonManager.cast(vals.get(i));
+				o1 = ConfigManager.cast(res.get(i));
+				o2 = ConfigManager.cast(vals.get(i));
 				try {
 					o1 = (double)o1 * (double)o2;
 					res.set(i, Double.toString((double) o1));
 				}catch (ClassCastException e) {
 					o1 = (int)o1 * (int)o2;
-					res.set(i, Double.toString((int) o1));
+					res.set(i, Integer.toString((int) o1));
 				}
 			}
 		}
 		else { //att_src n'existe pas
 			for(int i = 0; i < res.size(); i++) {
-				o1 = JsonManager.cast(res.get(i));
-				o2 = JsonManager.cast(att_src);
+				o1 = ConfigManager.cast(res.get(i));
+				o2 = ConfigManager.cast(att_src);
 				try {
 					o1 = (double)o1 * (double)o2;
 					res.set(i, Double.toString((double) o1));
 				}catch (ClassCastException e) {
 					o1 = (int)o1 * (int)o2;
-					res.set(i, Double.toString((int) o1));
+					res.set(i, Integer.toString((int) o1));
 				}
 			}
 		}

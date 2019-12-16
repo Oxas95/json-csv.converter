@@ -53,6 +53,7 @@ public class Converter {
 	
 	public void saveAs(String name, TypeFile tf) throws IllegalArgumentException, IOException, ConfigFileException {
 		cm.ProcessFile();
+		this.data = cm.getArrayCopy();
 		if(tf == TypeFile.CSV) {
 			CsvManager.parseCsvFile(name, data, largeur, hauteur);
 		}

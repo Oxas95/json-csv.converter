@@ -22,26 +22,6 @@ public enum App
 	APPLICATION;
 
 	/**
-	 * Method which detects input file format and launches the converter
-	 * Method called by interact()
-	 * @param fic_in
-	 * @param fic_out
-	 * @throws FileFormatException if file format isn't csv or json
-	 * @throws IOException
-	 * @throws CsvException
-	 * @throws IllegalArgumentException
-	 * @throws NullPointerException
-	 * @throws ConfigFileException 
-	 */
-	public static void launchApp(String fic_in, String fic_out, TypeFile tf) throws FileFormatException, IOException, NullPointerException, IllegalArgumentException, CsvException, ConfigFileException {
-		Converter c = new Converter(fic_in);
-		
-		c.configureData();
-		
-		c.saveAs(fic_out, tf);
-	}
-
-	/**
 	 * Method which asks an input file and a name for the output file and calls method launchApp()
 	 * @throws FileFormatException
 	 * @throws IOException
@@ -60,7 +40,12 @@ public enum App
 		while(fic_in.isEmpty()) {
 			fic_in = scan.nextLine();
 		}
-
+		
+		Converter c = new Converter(fic_in);
+		c.configureData();
+		
+		System.out.println("Entrez le nom du fichier de sortie pour valider les modifications");
+		
 		System.out.println("Veuillez saisir un nom pour votre fichier de sortie");
 		fic_out = scan.nextLine();
 		if (fic_out.isEmpty()) fic_out = fic_in;
@@ -68,13 +53,14 @@ public enum App
 		TypeFile[] tf = {TypeFile.CSV,TypeFile.JSON};
 		System.out.println("Veuillez sélectionner le produit souhaité : \n1." + tf[0] + "\n2." + tf[1]);
 		int choix = -1;
-		while(choix < 0 || choix > tf.length - 1) {
+		while(choix < 1 || choix > tf.length) {
 			try {
 				choix = scan.nextInt();
 			}catch(InputMismatchException e) {System.out.println("Entrée invalide");}
 		}
 		
-		launchApp(fic_in,fic_out, tf[choix - 1]);
+		System.out.println(choix);
+		c.saveAs(fic_out, tf[choix - 1]);
 		scan.close();
 	}
 
@@ -89,10 +75,6 @@ public enum App
 	 * @throws ConfigFileException 
 	 */
 	public static void main( String[] args ) throws IOException, FileFormatException, NullPointerException, IllegalArgumentException, CsvException, ConfigFileException {
-		//interact();
-		JsonManager jm = new JsonManager("jsonTest2.json");
-		System.out.println(jm);
-		CsvManager.parseCsvFile("jsonTest3", jm.getArrayCopy(), jm.getWidth(), jm.getHeight());
-		JsonManager.parseJsonFile("jsonTest3", jm.getArrayCopy(), jm.getWidth(), jm.getHeight());
+		interact();
 	}
 }

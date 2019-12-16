@@ -81,11 +81,12 @@ public class Manager {
 	 * @return copy of array
 	 */
 	public String[][] getArrayCopy(){
+		if(data == null) return null;
 		String[][] copy = new String[largeur][hauteur];
 		int i,j;
 		for(j = 0; j < hauteur; j++) {
 			for(i = 0; i <largeur; i++) {
-				copy[i][j] = new String(data[i][j]);
+				copy[i][j] = (data[i][j] == null)? "" : data[i][j];
 			}
 		}
 		return copy;
