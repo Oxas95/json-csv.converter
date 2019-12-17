@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.file.NoSuchFileException;
 
 import org.json.JSONException;
 import org.junit.After;
@@ -483,31 +482,22 @@ public class JsonTest {
 		JsonManager.parseJsonFile("test2.json", json.getArrayCopy(), json.getWidth(), json.getHeight());
 		JsonManager json2 = new JsonManager ("JsonTest.json");
 		
-		File testf =new File("test2f.json");
-		JsonManager.parseJsonFile("test2f.json", json2.getArrayCopy(), json2.getWidth(), json2.getHeight());
-		JsonManager jsont = new JsonManager ("test2f.json");
-		
-		if (json2.getHeight()==jsont.getHeight() && json2.getWidth() == jsont.getWidth())
+
+		boolean b = true;
+		if (json2.getHeight()==json.getHeight() && json2.getWidth() == json.getWidth())
 		{
-			int i,j;
-			
+			int i;
 			for (i=0;i<json2.getWidth();i++)
 			{
-				for(j=0;j<json2.getHeight();j++)
-				{System.out.println(json2.get(i,j)+"   "+jsont.get(i,j));
-					if(json2.get(i,j).equalsIgnoreCase(jsont.get(i, j))==false)
-					{
-						fail();
-					}
-				}
+				b = b && json2.getValues(json2.get(i, 0)).equals(json.getValues(json2.get(i,  0)));
 			}
 			
 		}
-		
 		test.delete();
-		testf.delete();
+		assertTrue(b);
 
 	}
+	
 	/**
 	 * Test le parseur en passant par le csv
 	 * @throws IOException si la lecture ou l'écriture fchier échoue
@@ -558,42 +548,27 @@ public class JsonTest {
 		JsonManager.parseJsonFile("Test.json", csvt.getArrayCopy(), csvt.getWidth(), csvt.getHeight());
 
     	JsonManager jst1 = new JsonManager("Test.json");
-		
-    	File testcsv2 =new File("testcsv2.csv");
-		CsvManager.parseCsvFile("testcsv2.csv", jst1.getArrayCopy(), jst1.getWidth(), jst1.getHeight());
-		CsvManager csv = new CsvManager ("testcsv2.csv");
-		
-		File js =new File("Testt2.json");
-		JsonManager.parseJsonFile("Testt2.json", csv.getArrayCopy(), csv.getWidth(), csv.getHeight());
-		JsonManager js11 = new JsonManager("Testt2.json");
-	
-		if (js11.getHeight()==jst1.getHeight() && js11.getWidth() == jst1.getWidth())
-		{
-			int i,j;
 			
-			for (i=0;i<js11.getWidth();i++)
+		boolean b = true;
+		if (js1.getHeight()==jst1.getHeight() && js1.getWidth() == jst1.getWidth())
+		{
+			int i;
+			for (i=0;i<js1.getWidth();i++)
 			{
-				for(j=0;j<js11.getHeight();j++)
-				{
-					
-					if(js11.get(i,j).equalsIgnoreCase(jst1.get(i, j))==false)
-					{
-						fail();
-					}
-				}
+				b = b && js1.getValues(js1.get(i, 0)).equals(jst1.getValues(js1.get(i,  0)));
 			}
-		
+			
 		}
 		
 		testcsvt.delete();
-		testcsv2.delete();
 		jst.delete();
-		js.delete();
+		assertTrue(b);
+
 	}
 	
 	/**
 	 * Test le parser avec un fichier Null
-	 * exception attendue : NullPointerException car le fichier est null
+	 * exception attendue : NullPointerException car le fichier passer en argument du parser est null
 	 * @throws IOException
 	 */
 	@Test(expected=NullPointerException.class)

@@ -3,7 +3,6 @@ package Sarah_Florian_Mathieu.Converter_json_csv.converter.manager;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -136,7 +135,7 @@ public class CsvTest {
 					+ "La laitière,yaourt à la vanille,5,yaourt,2.50\n");
 		  fw.close();
 		
-		CsvManager csv = new CsvManager ("CsvTest.csv");
+		new CsvManager ("CsvTest.csv");
 
 	}
 	
@@ -364,23 +363,22 @@ public class CsvTest {
 		CsvManager.parseCsvFile("test2", csv.getArrayCopy(), csv.getWidth(), csv.getHeight());
 		File test =new File("test2.csv");
 		CsvManager csvt = new CsvManager ("test2.csv");
+		
+		boolean b = true;
+
 		if (csv.getHeight()==csvt.getHeight() && csv.getWidth() == csvt.getWidth())
 		{
-			int i,j;
-			
+			int i;
 			for (i=0;i<csv.getWidth();i++)
 			{
-				for(j=0;j<csv.getHeight();j++)
-				{
-					if(csv.get(i,j).equalsIgnoreCase(csvt.get(i, j))==false)
-					{
-						fail();
-					}
-				}
+				b = b && csv.getValues(csv.get(i, 0)).equals(csvt.getValues(csv.get(i,  0)));
 			}
+			
 		}
 		
 		test.delete();
+		assertTrue(b);
+		
 	}
 	
 	/**
@@ -419,6 +417,7 @@ public class CsvTest {
 		CsvManager.parseCsvFile("testcsv2.csv", js.getArrayCopy(), js.getWidth(), js.getHeight());
 		
 		CsvManager csvt2 = new CsvManager ("testcsv2.csv");
+		
 		if (csvt2.getHeight()==csvt.getHeight() && csvt2.getWidth() == csvt.getWidth())
 		{
 			int i,j;

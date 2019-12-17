@@ -1,26 +1,18 @@
 package Sarah_Florian_Mathieu.Converter_json_csv.converter;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.NoSuchFileException;
-import java.util.Scanner;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ibm.icu.text.DisplayContext.Type;
 
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.ConfigFileException;
-import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.ConfigManager;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvException;
-import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvManager;
-import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.JsonManager;
+
 
 
 public class ConverterTest {

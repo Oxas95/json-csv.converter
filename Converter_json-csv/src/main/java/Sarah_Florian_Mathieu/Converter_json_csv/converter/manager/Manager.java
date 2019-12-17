@@ -1,5 +1,7 @@
 package Sarah_Florian_Mathieu.Converter_json_csv.converter.manager;
 
+import java.util.ArrayList;
+
 public class Manager {
 	/**
 	 * separator between a key and his subKey
@@ -89,6 +91,22 @@ public class Manager {
 			}
 		}
 		return copy;
+	}
+	
+	/**
+	 * Get Values of the key given
+	 * @param key to get values associated to this key
+	 * @return values associated
+	 */
+	public ArrayList<String> getValues(String key) {
+		if(data == null) return null;
+		int i = 0;
+		int j;
+		while(i<largeur && data[i][0].equalsIgnoreCase(key)==false) i++;
+		if(i == largeur)return null;
+		ArrayList<String> values = new ArrayList<String>();
+		for(j = 1;j < hauteur;j++)values.add(data[i][j]);
+		return values;
 	}
 	
 }
