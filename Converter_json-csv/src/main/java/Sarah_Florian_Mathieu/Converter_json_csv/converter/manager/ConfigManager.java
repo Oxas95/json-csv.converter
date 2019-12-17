@@ -502,6 +502,11 @@ public class ConfigManager extends Manager {
 		return res;
 	}
 	
+	/**
+	 * @param res the current result
+	 * @param att_src the right operand to store in res
+	 * @return the result containing att_src in addition
+	*/
 	private ArrayList<String> insert(ArrayList<String> res, String att_src) {
 		ArrayList<String> vals = values.get(att_src);
 		ArrayList<String> tmp;
