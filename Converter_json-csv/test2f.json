@@ -1,0 +1,33 @@
+{
+    "test": {"id": "file"},
+    "menu": {
+        "popup": {"menuitem": {
+            "onclick": [
+                "CreateNewDoc()",
+                "OpenDoc()",
+                "CloseDoc()"
+            ],
+            "undefined0": [
+                {
+                    "undefined0": [
+                        1,
+                        2,
+                        3
+                    ],
+                    "undefined1": [
+                        1,
+                        2
+                    ]
+                },
+                3
+            ],
+            "value": [
+                "New",
+                "New",
+                "Close"
+            ]
+        }},
+        "id": "file",
+        "value": "File"
+    }
+}

@@ -35,7 +35,14 @@ public class CsvTest {
 	    
 	}
 	 
-	// Test avec un fichier null
+	/**
+	 * Test d'un fichier Null
+	 * exception attendue : NullPointerException au moment de la lecture du fichier retourne l'exception car le fichier est null
+	 * @throws NullPointerException si le chemin d'accès est null pour CsvManager
+	 * @throws IllegalArgumentException si l'argument donnée à CsvManager est invalide
+	 * @throws CsvException si une erreur est détectée durant la lecture du fichier csv
+	 * @throws IOException si la lecture ou l'écriture échoue
+	 */
 	@Test(expected=NullPointerException.class)
 	public void TestConstructeur_Fichiernull_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 			
@@ -43,12 +50,20 @@ public class CsvTest {
 			
 	}
 	
-	// Test avec n'est pas un csv
+	/**
+	 * Test avec un fichier txt
+	 * exception attendue : IllegalArgumentException au moment de la lecture du fichier retourne l'exception car le fichier n'est pas un json
+	 * @throws NullPointerException si le chemin d'accès est null pour CsvManager
+	 * @throws IllegalArgumentException si l'argument donnée à CsvManager est invalide
+	 * @throws CsvException si une erreur est détectée durant la lecture du fichier csv
+	 * @throws IOException si la lecture ou l'écriture échoue
+	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void TestConstructeur_FichierNonCSV_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		new CsvManager ("CsvTest2.txt");
 			
 	}
+	
 	/**
 	 * Test d'un fichier inexistant 
 	 * exception attendue : NoSuchFileException au moment de la lecture du fichier retourne l'exception
@@ -64,6 +79,7 @@ public class CsvTest {
 		new CsvManager ("Inexist_fichier.csv");
 			
 	}
+	
 	/**
 	 * Test avec un fichier vide
 	 * @throws IOException si la lecture ou l'écriture échoue au niveau du new file et du csv mnager
@@ -71,7 +87,6 @@ public class CsvTest {
 	 * @throws IllegalArgumentException si l'argument donnée à CsvManager est invalide
 	 * @throws CsvException si une erreur est détectée durant la lecture du fichier csv
 	 */
-
 	@Test
 	public void TestConstructeur_Fichiervide_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException  {
 			
@@ -88,7 +103,6 @@ public class CsvTest {
 	 * @throws IllegalArgumentException si l'argument donnée à CsvManager est invalide
 	 * @throws CsvException si une erreur est détectée durant la lecture du fichier csv
 	 */
-	
 	@Test
 	public void TestConstructeur_FichierNonVide_CSV() throws IOException, NullPointerException, IllegalArgumentException, CsvException {
 		OutputStreamWriter fw;
@@ -105,7 +119,7 @@ public class CsvTest {
 	
 	/**
 	 * Test avec un argument en trop
-	 * exception attendue : CSVException caril y a trop d'argument dans la première ligne du tableau ("Andros,yaourt au citron,fraise,2,yaourt,1.50")
+	 * exception attendue : CSVException car il y a trop d'argument dans la première ligne du tableau ("Andros,yaourt au citron,fraise,2,yaourt,1.50")
 	 * @throws IOException si la lecture ou l'écriture échoue au niveau du new file et du csv mnager
 	 * @throws NullPointerException si le chemin d'accès est null pour CsvManager
 	 * @throws IllegalArgumentException si l'argument donnée à CsvManager est invalide
@@ -148,6 +162,7 @@ public class CsvTest {
 		
 		new CsvManager ("CsvTest.csv");
 	}
+	
 	/**
 	 * Test avec gestion des ""
 	 * erreur attendue : IOException car le fichier retourne une erreur lors de la lecture a cause de guillemet parasite 
@@ -170,6 +185,7 @@ public class CsvTest {
 		
 		new CsvManager ("CsvTest.csv");
 	}
+	
 	/**
 	 * Test du get 
 	 * @throws IOException si la lecture ou l'écriture échoue au niveau du new file et du csv mnager
@@ -194,6 +210,7 @@ public class CsvTest {
 		assertTrue(csv.get(0,0).equalsIgnoreCase("marque"));
 
 	}
+	
 	/**
 	 * Test le get pour une case inexistante
 	 * exception attendue : ArrayIndexOutOfBoundException car la case n'existe pas donc le get retourne une exception
@@ -270,6 +287,7 @@ public class CsvTest {
 		csv.set("test",10,1);
 		
 	}
+	
 	/**
 	 * Test la fonction getArraycopy
 	 * @throws IOException si la lecture ou l'écriture échoue au niveau du new file et du csv mnager
@@ -295,6 +313,7 @@ public class CsvTest {
 		
 		assertTrue(csv.get(1,1).equalsIgnoreCase(copy[1][1]));
 	}
+	
 	/**
 	 * Test si le parser Csv fonctionne
 	 * @throws IOException si la lecture ou l'écriture échoue au niveau du new file et du csv mnager
@@ -321,6 +340,7 @@ public class CsvTest {
 		
 
 	}
+	
 	/**
 	 * Test le parser pour vérifier que la convertion du csv vers un csv ne modifie pas le fichier
 	 * @throws IOException si la lecture ou l'écriture échoue au niveau du new file et du csv mnager
@@ -362,6 +382,7 @@ public class CsvTest {
 		
 		test.delete();
 	}
+	
 	/**
 	 * Test si la transformation du csv en json pour a nouveau en csv passède bien les mêmes informations
 	 * @throws IOException si la lecture ou l'écriture échoue au niveau du new file et du csv mnager
