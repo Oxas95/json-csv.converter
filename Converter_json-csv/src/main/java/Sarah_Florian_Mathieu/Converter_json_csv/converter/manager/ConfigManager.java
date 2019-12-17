@@ -62,9 +62,9 @@ public class ConfigManager extends Manager {
 	}
 	
 	/**
-	 * create list of strings containing which line of the file
+	 * create list of strings containing each line of the file
 	 * @param path is the path of the file to store in the list
-	 * @return the list containing which line of the file in elements of the file
+	 * @return the list containing each line of the file in elements of the file
 	 * @throws FileNotFoundException if file is not found
 	 */
 	public static ArrayList<String> fileToListString(String path) throws FileNotFoundException {
@@ -80,7 +80,7 @@ public class ConfigManager extends Manager {
 	/**
 	 * separate keys storage and calculs
 	 * @param cible to store keys
-	 * @param operations to stores calculs of which keys
+	 * @param operations to stores calculs of each keys
 	 * @throws FileNotFoundException if file is not found
 	 * @throws ConfigFileException if there is more than one '=' in a line 
 	 */
@@ -100,9 +100,9 @@ public class ConfigManager extends Manager {
 	}
 
 	/**
-	 * split which elements of the string and store it in a list
+	 * split each elements of the string and store it in a list
 	 * @param s string to split
-	 * @return the list containing which elements splited 
+	 * @return the list containing each elements splited 
 	 */
 	private ArrayList<String> splitOnOperator(String s){
 		s = s.trim();
@@ -126,7 +126,8 @@ public class ConfigManager extends Manager {
 		ArrayList<String> res;
 		for(int i = 0; i < operations.size(); i++) {
 			split = splitOnOperator(operations.get(i));
-			res = getValues(split.get(0));
+			System.out.println(split);
+			res = values.get(split.get(0));
 			if(res == null) {
 				res = new ArrayList<String>();
 				res.add(split.get(0));
@@ -138,6 +139,9 @@ public class ConfigManager extends Manager {
 				try{
 					if(split.get(0).charAt(0) == '/') {
 						res = divide(res,split.get(1));
+					}
+					else if(split.get(0).charAt(0) == '&') {
+						res = insert(res,split.get(1));
 					}
 					else if(split.get(0).charAt(0) == '-') {
 						res = substract(res,split.get(1));
@@ -177,12 +181,20 @@ public class ConfigManager extends Manager {
 			}
 			
 			if(split != null) {
-				values.put(attributs.get(i), res);
-				//System.out.println("final " + res);
+				if(res.isEmpty()) {
+					values.remove(attributs.get(i));
+					attributs.remove(i);
+				}
+				else {
+					String s = attributs.get(i);
+					if(attributs.contains(s) == false) attributs.add(s);
+					values.put(s, res);
+					System.out.println("final " + res);
+				}
 			}
 		}
 	}
-	
+
 	/**
 	 * store the new data in the data table
 	 */
@@ -216,17 +228,6 @@ public class ConfigManager extends Manager {
 		splitData(attributs, operations);
 		evaluate();
 		updateData();
-	}
-	
-	/**
-	 * get values of a key
-	 * @param att_src is the key required to get values
-	 * @return return the list of values associated with the key given or null if values can't be given
-	 */
-	private ArrayList<String> getValues(String att_src){
-		if(att_src != null)
-			return values.get(att_src);
-		else return null;
 	}
 	
 	/**
@@ -294,7 +295,7 @@ public class ConfigManager extends Manager {
 	 * @return the result of concatenation
 	 */
 	private ArrayList<String> concatenate (ArrayList<String> res, String att_src) {
-		ArrayList<String> vals = getValues(att_src);
+		ArrayList<String> vals = values.get(att_src);
 		ArrayList<String> tmp;
 		
 		if(vals != null) { //att_src existe
@@ -326,7 +327,7 @@ public class ConfigManager extends Manager {
 	 * @throws NumberFormatException if a value of an operand is not a number
 	 */
 	private ArrayList<String> add (ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
-		ArrayList<String> vals = getValues(att_src);
+		ArrayList<String> vals = values.get(att_src);
 		ArrayList<String> tmp;
 		Object o1, o2;
 		
@@ -376,7 +377,7 @@ public class ConfigManager extends Manager {
 	 * @throws NumberFormatException if a value of an operand is not a number
 	 */
 	private ArrayList<String> substract (ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
-		ArrayList<String> vals = getValues(att_src);
+		ArrayList<String> vals = values.get(att_src);
 		Object o1, o2;
 		
 		if(vals != null) { //att_src existe
@@ -419,7 +420,7 @@ public class ConfigManager extends Manager {
 	 * @throws NumberFormatException if a value of an operand is not a number
 	 */
 	private ArrayList<String> divide (ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
-		ArrayList<String> vals = getValues(att_src);
+		ArrayList<String> vals = values.get(att_src);
 		Object o1, o2;
 		
 		if(vals != null) { //att_src existe
@@ -462,7 +463,7 @@ public class ConfigManager extends Manager {
 	 * @throws NumberFormatException if a value of an operand is not a number
 	 */
 	private ArrayList<String> multiply (ArrayList<String> res, String att_src) throws ClassCastException, NumberFormatException {
-		ArrayList<String> vals = getValues(att_src);
+		ArrayList<String> vals = values.get(att_src);
 		ArrayList<String> tmp;
 		Object o1, o2;
 		
@@ -496,6 +497,22 @@ public class ConfigManager extends Manager {
 					res.set(i, Integer.toString((int) o1));
 				}
 			}
+		}
+		
+		return res;
+	}
+	
+	private ArrayList<String> insert(ArrayList<String> res, String att_src) {
+		ArrayList<String> vals = values.get(att_src);
+		ArrayList<String> tmp;
+		
+		if(vals != null) { //att_src existe
+			for(int i = 0; i < vals.size(); i++) {
+				res.add(vals.get(i));
+			}
+		}
+		else { //att_src n'existe pas
+			res.add(att_src);
 		}
 		
 		return res;

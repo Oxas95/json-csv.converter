@@ -1,0 +1,42 @@
+{
+    "test": {"id": [
+        "filefilefilefile123456789New",
+        "123456789New",
+        "123456789Close"
+    ]},
+    "menu": {
+        "popup": {"menuitem": {
+            "onclick": [
+                "CreateNewDoc()file3",
+                "OpenDoc()",
+                "CloseDoc()"
+            ],
+            "undefined0": [
+                {
+                    "undefined0": [
+                        5,
+                        10,
+                        15
+                    ],
+                    "undefined1": [
+                        2,
+                        4,
+                        0
+                    ]
+                },
+                "banane"
+            ],
+            "value": [
+                "New",
+                "New",
+                "Close"
+            ]
+        }},
+        "id": [],
+        "value": [
+            "FilejambonFilejambon",
+            "jambonjambon",
+            "jambonjambon"
+        ]
+    }
+}
