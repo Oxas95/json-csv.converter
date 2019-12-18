@@ -438,8 +438,7 @@ public class ConverterTest {
 	 * @throws FileFormatException si le format n'est ni un csv ni un json
 	 * @throws ConfigFileException si la configuration n'est pas possible
 	 */
-	// Attention ici il devrai retourner une erreur
-	@Test
+	@Test (expected = FileFormatException.class)
 	public void TestsaveAs_null_Convert() throws IOException, NullPointerException, FileFormatException, IllegalArgumentException, CsvException, ConfigFileException{
 		File test_json;
 		test_json = new File("Test_save.json");

@@ -113,8 +113,8 @@ public class ConfigManager extends Manager {
 		System.out.println("*****************************");*/
 		int i;
 		String[] tmp, tmp2 = null;
-		tmp = s.split("[^a-zA-Z][*/+&]");
-		tmp2 = s.split("[^*/+&]");
+		tmp = s.split("[^a-zA-Z][*/+&|-]");
+		tmp2 = s.split("[^*/+&|-]");
 		String tmp22 = "";
 
 		for(i=0; i<tmp2.length;i++){
@@ -275,6 +275,8 @@ public class ConfigManager extends Manager {
 		splitData(attributs, operations);
 		evaluate();
 		updateData();
+		File f = new File("Config.cfg");
+		f.deleteOnExit();
 	}
 	
 	/**

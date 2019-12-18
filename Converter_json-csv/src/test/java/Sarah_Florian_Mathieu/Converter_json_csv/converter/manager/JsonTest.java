@@ -541,10 +541,12 @@ public class JsonTest {
 		JsonManager js1 = new JsonManager ("JsonTest.json");
 		
 		File testcsvt =new File("testcsvt.csv");
+		testcsvt.delete();
 		CsvManager.parseCsvFile("testcsvt.csv", js1.getArrayCopy(), js1.getWidth(), js1.getHeight());
 		CsvManager csvt = new CsvManager ("testcsvt.csv");
 		
 		File jst =new File("Test.json");
+		jst.delete();
 		JsonManager.parseJsonFile("Test.json", csvt.getArrayCopy(), csvt.getWidth(), csvt.getHeight());
 
     	JsonManager jst1 = new JsonManager("Test.json");

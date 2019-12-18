@@ -196,7 +196,7 @@ public class ConfigTest {
 	 * @throws NullPointerException si le chemin d'accès est null 
 	 * @throws ConfigFileException si une erreur est détecter durant la gestion des donnée du ConfigManager
 	 */
-	@Test(expected=ConfigFileException.class)
+	@Test
 	public void TestProcess_Argumentoublie_Config() throws IOException, NullPointerException, ConfigFileException {
 		
 		JsonManager json = new JsonManager ("jsonTest2.json");
