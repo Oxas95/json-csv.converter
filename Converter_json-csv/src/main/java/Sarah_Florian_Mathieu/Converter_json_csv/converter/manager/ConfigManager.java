@@ -158,7 +158,7 @@ public class ConfigManager extends Manager {
 		/*for(i = 0; i < splitfinal.size() ; i++){
 			System.out.println(splitfinal.get(i));
 		}*/
-		return split;
+		return splitfinal;
 	}
 	
 	/**
