@@ -92,9 +92,11 @@ public class ConfigManager extends Manager {
 			tmp = currentLine.split("=");
 			if(tmp.length != 2) throw new ConfigFileException();
 			else {
-				cible.add(tmp[0].trim());
-				values.put(tmp[0].trim(),setValues(tmp[0].trim()));
-				operations.add(tmp[1].trim());
+				if(tmp[0].trim().isEmpty() == false) {
+					 cible.add(tmp[0].trim());
+					 values.put(tmp[0].trim(),setValues(tmp[0].trim()));
+					 operations.add(tmp[1].trim());
+				}
 			}
 		}
 	}
@@ -158,7 +160,7 @@ public class ConfigManager extends Manager {
 		/*for(i = 0; i < splitfinal.size() ; i++){
 			System.out.println(splitfinal.get(i));
 		}*/
-		return split;
+		return splitfinal;
 	}
 	
 	/**
@@ -181,6 +183,7 @@ public class ConfigManager extends Manager {
 			if(continuer == true) continuer = continuer && split.isEmpty() == false;
 			while(continuer) {
 				try{
+					if(split.get(1).isEmpty()) throw new ConfigFileException ();
 					if(split.get(0).charAt(0) == '/') {
 						res = divide(res,split.get(1));
 					}
@@ -211,7 +214,7 @@ public class ConfigManager extends Manager {
 						split.remove(0);
 						split.remove(0);
 					}
-				}catch (ClassCastException | NumberFormatException | IndexOutOfBoundsException e) { //calcul impossible, suppression de l'attribut dans les données
+				}catch (ClassCastException | NumberFormatException | IndexOutOfBoundsException | ConfigFileException e) { //calcul impossible, suppression de l'attribut dans les données
 					System.out.println("fail, unable to calcul");
 					split = null;
 					removeAttribut(attributs.get(i));
