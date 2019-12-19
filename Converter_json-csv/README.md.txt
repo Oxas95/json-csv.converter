@@ -20,6 +20,7 @@ fichier convertit contiendra "attr1" auquel on a multiplié 2 et ajouté 1.
 *Un attribut ne doit pas avoir de nom possédant un opérateur ci-dessus.
 *Seuls les nombres sont autorisés pour les opérateurs '-','+','*','/'.
 *L'opérateur '&' permet d'ajouter une valeur à un tableau de valeurs d'un attribut. ([2,3,5,aaa] & jambon donne [2,3,5,aaa,jambon]).
+*'|' est un opérateur de concaténation. Par exemple: 4|aza donne 4aza.
 
 
 ***Mode d'emploi***
