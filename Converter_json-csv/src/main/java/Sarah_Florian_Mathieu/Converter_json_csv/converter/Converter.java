@@ -76,9 +76,9 @@ public class Converter {
 	 * @throws IOException if problem to save the new file
 	 * @throws ConfigFileException if configFile contain invalid data
 	 * @throws NullPointerException if name is null
-	 * @throws fileFormatException if tf is invalid
+	 * @throws FileFormatException if tf is invalid
 	 */
-	public void saveAs(String name, TypeFile tf) throws IllegalArgumentException, IOException, ConfigFileException, NullPointerException {
+	public void saveAs(String name, TypeFile tf) throws IllegalArgumentException, IOException, ConfigFileException, NullPointerException, FileFormatException {
 		cm.ProcessFile();
 		this.data = cm.getArrayCopy();
 		if(tf == TypeFile.CSV) {
@@ -87,6 +87,6 @@ public class Converter {
 		else if(tf == TypeFile.JSON) {
 			JsonManager.parseJsonFile(name, data, largeur, hauteur);
 		}
-		else throw new fileFormatException ();
+		else throw new FileFormatException ();
 	}
 }

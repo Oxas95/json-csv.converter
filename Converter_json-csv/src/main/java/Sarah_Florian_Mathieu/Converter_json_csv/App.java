@@ -73,6 +73,10 @@ public enum App
 	 * @throws ConfigFileException if problem to configure data
 	 */
 	public static void main( String[] args ) throws IOException, FileFormatException, NullPointerException, IllegalArgumentException, CsvException, ConfigFileException {
-		interact();
+		try{
+			interact();
+		} catch (Exception e) {
+			System.err.println("Une erreur est survenu durant la conversion, aucun fichier n'a été créé.");
+		}
 	}
 }

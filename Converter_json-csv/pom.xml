@@ -115,4 +115,12 @@
         </plugin>
 	  </plugins>
     </build>
+	
+	<distributionManagement>
+    <site>
+      <id>www.yourcompany.com</id>
+      <url>scp://www.yourcompany.com/www/docs/project/</url>
+    </site>
+  </distributionManagement>
+  
 </project>

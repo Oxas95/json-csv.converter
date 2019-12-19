@@ -107,60 +107,15 @@ public class ConfigManager extends Manager {
 	 * @return the list containing each elements splited 
 	 */
 	private  ArrayList<String> splitOnOperator(String s){
-		//String s = "att + 2 * 3 & 4 + petite lol kfc";
 		s = s.trim();
-		/*System.out.println(s);
-		System.out.println("*****************************");*/
 		int i;
-		String[] tmp, tmp2 = null;
-		tmp = s.split("[^a-zA-Z][*/+&]");
-		tmp2 = s.split("[^*/+&]");
-		String tmp22 = "";
-
-		for(i=0; i<tmp2.length;i++){
-			tmp22 = tmp22 + tmp2[i];
-		}
-		tmp22.trim();
-		//System.out.println("TEST!: "+ tmp22);
-
-		for(i = 0; i<tmp22.length();i++){
-			tmp2[i] = String.valueOf(tmp22.charAt(i));
-		}
-
+		String[] tmp = null;
+		tmp = s.split("(?<=[-+*/|&])|(?=[-+*/|&])");
 		ArrayList<String> split = new ArrayList<String> (tmp.length);
-		ArrayList<String> split2 = new ArrayList<String> (tmp2.length);
-
 		for(i = 0; i < tmp.length ; i++){
 			split.add(i, tmp[i].trim());
 		}
-		for(i = 0; i < tmp22.length() ; i++){
-			split2.add(i, tmp2[i].trim());
-		}
-
-		/*for(i = 0; i < tmp.length ; i++){
-			System.out.println(split.get(i));
-		}*/
-		/*for(i = 0; i < tmp22.length() ; i++){
-			System.out.println(split2.get(i));
-		}
-		System.out.println(tmp22.length()+tmp.length);*/
-		ArrayList<String> splitfinal = new ArrayList<String> (tmp.length + tmp22.length());
-		int cmptmp = 0, cmptmp2 = 0;
-
-		for(i = 0; i < tmp.length + tmp22.length() ; i++){
-			if(i%2 == 0){
-				splitfinal.add(i, split.get(cmptmp));
-				cmptmp++;
-			}
-			else{
-				splitfinal.add(i, split2.get(cmptmp2));
-				cmptmp2++;
-			}
-		}
-		/*for(i = 0; i < splitfinal.size() ; i++){
-			System.out.println(splitfinal.get(i));
-		}*/
-		return splitfinal;
+		return split;
 	}
 	
 	/**
@@ -172,7 +127,6 @@ public class ConfigManager extends Manager {
 		ArrayList<String> res;
 		for(int i = 0; i < operations.size(); i++) {
 			split = splitOnOperator(operations.get(i));
-			System.out.println(split);
 			res = values.get(split.get(0));
 			if(res == null) {
 				res = new ArrayList<String>();
@@ -203,7 +157,7 @@ public class ConfigManager extends Manager {
 						res = concatenate(res,split.get(1));
 					}
 					else { //ConfigFileException qui ne peut etre capturé si l'operateur est invalide
-						System.out.println("fail invalid operator : " + split.get(0));
+						System.out.println("fail. Invalid operator : " + split.get(0));
 						split = null;
 						if(removeAttribut(attributs.get(i))) ;
 						operations.remove(i);
@@ -215,12 +169,10 @@ public class ConfigManager extends Manager {
 						split.remove(0);
 					}
 				}catch (ClassCastException | NumberFormatException | IndexOutOfBoundsException | ConfigFileException e) { //calcul impossible, suppression de l'attribut dans les données
-					System.out.println("fail, unable to calcul");
 					split = null;
 					removeAttribut(attributs.get(i));
 					operations.remove(i);
 					i--;
-					e.printStackTrace();
 					
 				}
 				continuer = split != null;
@@ -236,7 +188,6 @@ public class ConfigManager extends Manager {
 					String s = attributs.get(i);
 					if(attributs.contains(s) == false) attributs.add(s);
 					values.put(s, res);
-					System.out.println("final " + res);
 				}
 			}
 		}
@@ -275,6 +226,8 @@ public class ConfigManager extends Manager {
 		splitData(attributs, operations);
 		evaluate();
 		updateData();
+		File f = new File("Config.cfg");
+		f.deleteOnExit();
 	}
 	
 	/**
