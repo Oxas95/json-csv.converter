@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.ConfigFileException;
@@ -15,9 +17,49 @@ import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvException;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.CsvManager;
 import Sarah_Florian_Mathieu.Converter_json_csv.converter.manager.JsonManager;
 
-
-
 public class ConfigTest {
+	
+	@Before 
+	public void setUp() throws IOException {
+		OutputStreamWriter fw;
+		 fw = new OutputStreamWriter(new FileOutputStream("jsonTest2.json"));
+		    fw.write("{\r\n" + 
+		    		"    \"test\": {\"id\": \"file\"},\r\n" + 
+		    		"    \"menu\": {\r\n" + 
+		    		"        \"popup\": {\"menuitem\": [\r\n" + 
+		    		"            [\r\n" + 
+		    		"                [1,2,3],\r\n" + 
+		    		"                [1,2],\r\n" + 
+		    		"                3\r\n" + 
+		    		"            ],\r\n" + 
+		    		"            {\r\n" + 
+		    		"                \"onclick\": [\r\n" + 
+		    		"                    \"CreateNewDoc()\",\r\n" + 
+		    		"                    \"OpenDoc()\",\r\n" + 
+		    		"                    \"CloseDoc()\"\r\n" + 
+		    		"                ],\r\n" + 
+		    		"                \"value\": [\r\n" + 
+		    		"                    \"New\",\r\n" + 
+		    		"                    \"New\",\r\n" + 
+		    		"                    \"Close\"\r\n" + 
+		    		"                ]\r\n" + 
+		    		"            }\r\n" + 
+		    		"        ]},\r\n" + 
+		    		"        \"id\": \"file\",\r\n" + 
+		    		"        \"value\": \"File\"\r\n" + 
+		    		"    }\r\n" + 
+		    		"}\r\n" + 
+		    		"");
+		fw.close();
+	   
+	}
+	
+	@After
+	public void tearDown() throws IOException {
+		File f = new File ("jsonTest2.json");
+		f.delete();
+	    
+	}
 	
 	/**
 	 * Test du constructeur
