@@ -2,8 +2,6 @@ package Sarah_Florian_Mathieu.Converter_json_csv.converter;
 
 /**
  * enumeration of possible format for conversion
- * @author 
- *
  */
 public enum TypeFile {
 	JSON("json"),

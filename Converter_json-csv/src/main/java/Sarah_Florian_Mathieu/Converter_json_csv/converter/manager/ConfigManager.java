@@ -217,8 +217,8 @@ public class ConfigManager extends Manager {
 	
 	/**
 	 * read the configFile, evaluate all calculs and store all results in the table data
-	 * @throws FileNotFoundException
-	 * @throws ConfigFileException
+	 * @throws FileNotFoundException if Config.cfg file don't exists
+	 * @throws ConfigFileException if there are syntax errors in Config.cfg 
 	 */
 	public void ProcessFile() throws FileNotFoundException, ConfigFileException {
 		attributs = new ArrayList <String> ();

@@ -1,0 +1,22 @@
+{
+    "quantité": [
+        4,
+        10
+    ],
+    "produit": [
+        "yaourt",
+        "yaourt"
+    ],
+    "prix": [
+        1.5,
+        2.5
+    ],
+    "nom": [
+        "yaourt au citron,fraise",
+        "yaourt à la vanille"
+    ],
+    "marque": [
+        "Andros",
+        "La laitiere"
+    ]
+}
